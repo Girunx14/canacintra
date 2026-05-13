@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Canacintra{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded-3 mb-4">
+    <h1 class="display-4">¡Bienvenido a Canacintra!</h1>
+    <p class="lead">Tu sitio de noticias y actualizaciones.</p>
+    <hr class="my-4">
+    <p>Explora las últimas publicaciones y mantente informado.</p>
+</div>
+
+<h2 class="mb-4">Últimas Publicaciones</h2>
+<div class="row">
+    {% for post in posts %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ post.titulo }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        Por {{ post.autor.username }} | 
+                        {{ post.fecha_publicacion|date:"d/m/Y" }}
+                    </h6>
+                    <p class="card-text">{{ post.get_resumen }}</p>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No hay publicaciones disponibles aún.
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
