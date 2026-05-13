@@ -76,9 +76,17 @@ canacintra/
 └── requirements.txt    # Dependencias
 ```
 
+## Modelos del Blog
+
+El proyecto incluye los siguientes modelos:
+
+- **Categoria**: Clasificación principal de las notas
+- **Tag**: Etiquetas para las publicaciones  
+- **Post**: Publicaciones del blog con título, contenido, autor, categoría, tags, imagen, etc.
+
 ## Próximos Pasos
 
-- [Paso 2] Modelos del Blog (Post, Categoría, Tag)
+- ~~[Paso 2]~~ ✅ Modelos del Blog (Post, Categoría, Tag)
 - [Paso 3] Autenticación de usuarios
 - [Paso 4] Vistas y Templates del Blog
 - [Paso 5] Sistema de Comentarios
