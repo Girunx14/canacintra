@@ -1,6 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
-from .models import Post, Categoria, Tag
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Post, Categoria, Tag, Comentario
+from .forms import ComentarioForm
 
 
 def inicio(request):
@@ -24,16 +27,33 @@ def detalle_post(request, slug):
     """Muestra el detalle de una publicación."""
     post = get_object_or_404(Post.objects.select_related('autor', 'categoria'), slug=slug, publicado=True)
     tags = post.tags.all()
+    comentarios = post.comentarios.filter(aprobado=True).select_related('autor')
     
     posts_relacionados = Post.objects.filter(
         categoria=post.categoria,
         publicado=True
     ).exclude(pk=post.pk)[:3]
     
+    # Formulario de comentario
+    form = None
+    if request.user.is_authenticated:
+        form = ComentarioForm()
+        if request.method == 'POST':
+            form = ComentarioForm(request.POST)
+            if form.is_valid():
+                comentario = form.save(commit=False)
+                comentario.post = post
+                comentario.autor = request.user
+                comentario.save()
+                messages.success(request, 'Tu comentario se envió correctamente. Será revisado por un moderador.')
+                return redirect('blog:detalle_post', slug=post.slug)
+    
     return render(request, 'blog/detalle_post.html', {
         'post': post,
         'tags': tags,
-        'posts_relacionados': posts_relacionados
+        'posts_relacionados': posts_relacionados,
+        'comentarios': comentarios,
+        'form': form,
     })
 
 

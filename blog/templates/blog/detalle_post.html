@@ -73,6 +73,65 @@
     </div>
 </article>
 
+<!-- Sección de Comentarios -->
+<section class="border-top pt-4 mt-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h3 class="mb-4">
+                Comentarios 
+                <span class="badge bg-secondary">{{ post.get_comentarios_count }}</span>
+            </h3>
+            
+            {% if user.is_authenticated %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Dejar un comentario</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            {% if form %}
+                                <div class="mb-3">
+                                    {{ form.contenido.label_tag }}
+                                    {{ form.contenido }}
+                                    {% for error in form.contenido.errors %}
+                                        <div class="text-danger mt-1">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    Enviar comentario
+                                </button>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info mb-4">
+                    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="alert-link">
+                        Inicia sesión
+                    </a> para dejar un comentario.
+                </div>
+            {% endif %}
+            
+            <div class="comentarios-list">
+                {% for comentario in comentarios %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">{{ comentario.autor.username }}</h6>
+                                <small class="text-muted">{{ comentario.fecha_creacion|date:"d/m/Y H:i" }}</small>
+                            </div>
+                            <p class="card-text">{{ comentario.contenido|linebreaks }}</p>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">Sé el primero en comentar esta publicación.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
 {% if posts_relacionados %}
 <section class="border-top pt-4 mt-5">
     <h3 class="mb-4">Noticias Relacionadas</h3>

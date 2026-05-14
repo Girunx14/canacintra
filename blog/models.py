@@ -93,3 +93,37 @@ class Post(models.Model):
         if self.resumen:
             return self.resumen
         return self.contenido[:150] + '...'
+    
+    def get_comentarios_count(self):
+        """Retorna la cantidad de comentarios aprobados."""
+        return self.comentarios.filter(aprobado=True).count()
+
+
+class Comentario(models.Model):
+    """Comentarios de los usuarios en las publicaciones."""
+    post = models.ForeignKey(
+        Post, 
+        on_delete=models.CASCADE, 
+        related_name='comentarios'
+    )
+    autor = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='comentarios'
+    )
+    contenido = models.TextField(help_text='Tu comentario')
+    aprobado = models.BooleanField(default=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['fecha_creacion']
+        verbose_name = 'Comentario'
+        verbose_name_plural = 'Comentarios'
+        indexes = [
+            models.Index(fields=['aprobado']),
+            models.Index(fields=['fecha_creacion']),
+        ]
+
+    def __str__(self):
+        return f'Comentario de {self.autor.username} en {self.post.titulo}'

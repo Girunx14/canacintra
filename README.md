@@ -83,3 +83,22 @@ El proyecto incluye los siguientes modelos:
 - **Categoria**: Clasificación principal de las notas
 - **Tag**: Etiquetas para las publicaciones  
 - **Post**: Publicaciones del blog con título, contenido, autor, categoría, tags, imagen, etc.
+- **Comentario**: Comentarios de usuarios en las publicaciones (con moderación)
+
+## Características
+
+- ✅ Autenticación de usuarios (registro, login, logout)
+- ✅ CRUD de publicaciones desde el admin
+- ✅ Categorías y tags para organizar contenido
+- ✅ Sistema de comentarios con moderación
+- ✅ Paginación de publicaciones
+- ✅ Diseño responsive con Bootstrap 5
+- ✅ Panel de administración Django para gestión de contenido
+
+## Próximos Pasos (Opcionales)
+
+- [ ] Sistema de búsqueda de publicaciones
+- [ ] API REST con Django REST Framework
+- [ ] Modo oscuro/claro
+- [ ] Suscripción por email
+- ] Exportar a PDF

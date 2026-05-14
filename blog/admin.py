@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Categoria, Tag, Post
+from .models import Categoria, Tag, Post, Comentario
 
 
 @admin.register(Categoria)
@@ -19,8 +19,8 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = [
-        'titulo', 'autor', 'categoria', 'publicado',
-        'destacado', 'fecha_publicacion'
+        'titulo', 'autor', 'categoria', 'publicado', 
+        'destacado', 'fecha_publicacion', 'get_comentarios_count'
     ]
     list_filter = ['publicado', 'destacado', 'categoria', 'fecha_publicacion']
     search_fields = ['titulo', 'contenido', 'resumen']
@@ -29,7 +29,7 @@ class PostAdmin(admin.ModelAdmin):
     date_hierarchy = 'fecha_publicacion'
     ordering = ['-fecha_publicacion']
     filter_horizontal = ['tags']
-
+    
     fieldsets = (
         ('Información principal', {
             'fields': ('titulo', 'slug', 'autor', 'categoria')
@@ -44,3 +44,27 @@ class PostAdmin(admin.ModelAdmin):
             'fields': ('tags',)
         }),
     )
+    
+    def get_comentarios_count(self, obj):
+        return obj.get_comentarios_count()
+    get_comentarios_count.short_description = 'Comentarios'
+
+
+@admin.register(Comentario)
+class ComentarioAdmin(admin.ModelAdmin):
+    list_display = ['autor', 'post', 'aprobado', 'fecha_creacion']
+    list_filter = ['aprobado', 'fecha_creacion']
+    search_fields = ['contenido', 'autor__username', 'post__titulo']
+    ordering = ['-fecha_creacion']
+    
+    actions = ['aprobar_seleccionados', 'desaprobar_seleccionados']
+    
+    def aprobar_seleccionados(self, request, queryset):
+        queryset.update(aprobado=True)
+        self.message_user(request, f'{queryset.count()} comentarios aprobados.')
+    aprobar_seleccionados.short_description = 'Aprobar comentarios seleccionados'
+    
+    def desaprobar_seleccionados(self, request, queryset):
+        queryset.update(aprobado=False)
+        self.message_user(request, f'{queryset.count()} comentarios desaprobados.')
+    desaprobar_seleccionados.short_description = 'Desaprobar comentarios seleccionados'
