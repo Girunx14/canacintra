@@ -1,17 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %}Inicio - Canacintra{% endblock %}
+{% block title %}Noticias - Canacintra{% endblock %}
 
 {% block content %}
-<div class="jumbotron bg-light p-5 rounded-3 mb-4">
-    <h1 class="display-4">¡Bienvenido a Canacintra!</h1>
-    <p class="lead">Tu sitio de noticias y actualizaciones.</p>
-    <hr class="my-4">
-    <p>Explora las últimas publicaciones y mantente informado.</p>
-    <a class="btn btn-primary btn-lg" href="{% url 'blog:lista_posts' %}">Ver todas las noticias</a>
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-5">Todas las Noticias</h1>
+        <p class="text-muted">Explora nuestro archivo de publicaciones</p>
+    </div>
 </div>
 
-<h2 class="mb-4">Últimas Publicaciones</h2>
 <div class="row">
     {% for post in posts %}
         <div class="col-md-4 mb-4">
@@ -49,9 +47,33 @@
     {% endfor %}
 </div>
 
-<div class="text-center mt-4">
-    <a href="{% url 'blog:lista_posts' %}" class="btn btn-outline-primary btn-lg">
-        Ver todas las noticias →
-    </a>
-</div>
+{% if posts.has_other %}
+<nav aria-label="Navegación de páginas">
+    <ul class="pagination justify-content-center">
+        {% if posts.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ posts.previous_page_number }}">Anterior</a>
+            </li>
+        {% endif %}
+        
+        {% for num in posts.paginator.page_range %}
+            {% if posts.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if posts.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ posts.next_page_number }}">Siguiente</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
 {% endblock %}

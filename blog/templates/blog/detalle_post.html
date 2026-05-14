@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.titulo }} - Canacintra{% endblock %}
+
+{% block content %}
+<article class="mb-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <header class="mb-4">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'blog:inicio' %}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'blog:lista_posts' %}">Noticias</a></li>
+                        {% if post.categoria %}
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'blog:por_categoria' post.categoria.slug %}">{{ post.categoria.nombre }}</a>
+                            </li>
+                        {% endif %}
+                        <li class="breadcrumb-item active">{{ post.titulo|truncatewords:5 }}</li>
+                    </ol>
+                </nav>
+                
+                <h1 class="display-6 mb-3">{{ post.titulo }}</h1>
+                
+                <div class="text-muted mb-3">
+                    <small>
+                        {% if post.categoria %}
+                            <a href="{% url 'blog:por_categoria' post.categoria.slug %}" class="text-decoration-none">
+                                {{ post.categoria.nombre }}
+                            </a> |
+                        {% endif %}
+                        Por <strong>{{ post.autor.username }}</strong> | 
+                        {{ post.fecha_publicacion|date:"d de F, Y" }}
+                    </small>
+                </div>
+                
+                {% if post.imagen_portada %}
+                    <figure class="figure mb-4">
+                        <img src="{{ post.imagen_portada.url }}" class="img-fluid rounded" alt="{{ post.titulo }}">
+                    </figure>
+                {% endif %}
+            </header>
+            
+            <div class="post-content mb-4">
+                {{ post.contenido|linebreaks }}
+            </div>
+            
+            {% if tags %}
+            <footer class="border-top pt-3">
+                <div class="mb-3">
+                    <strong>Etiquetas:</strong>
+                    {% for tag in tags %}
+                        <a href="{% url 'blog:por_tag' tag.slug %}" class="badge bg-secondary text-decoration-none me-1">
+                            {{ tag.nombre }}
+                        </a>
+                    {% endfor %}
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{% url 'blog:lista_posts' %}" class="btn btn-outline-primary">
+                        ← Volver al listado
+                    </a>
+                    
+                    <div>
+                        <button class="btn btn-outline-secondary" onclick="compartir()">
+                            Compartir
+                        </button>
+                    </div>
+                </div>
+            </footer>
+            {% endif %}
+        </div>
+    </div>
+</article>
+
+{% if posts_relacionados %}
+<section class="border-top pt-4 mt-5">
+    <h3 class="mb-4">Noticias Relacionadas</h3>
+    <div class="row">
+        {% for relacionado in posts_relacionados %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <a href="{% url 'blog:detalle_post' relacionado.slug %}" class="text-decoration-none text-dark">
+                                {{ relacionado.titulo }}
+                            </a>
+                        </h6>
+                        <p class="card-text small text-muted">
+                            {{ relacionado.get_resumen }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<script>
+function compartir() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ post.titulo }}',
+            url: window.location.href
+        });
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('Enlace copiado al portapapeles');
+    }
+}
+</script>
+{% endblock %}

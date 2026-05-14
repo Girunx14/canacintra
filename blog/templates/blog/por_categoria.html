@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ categoria.nombre }} - Canacintra{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'blog:inicio' %}">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'blog:lista_posts' %}">Noticias</a></li>
+                <li class="breadcrumb-item active">{{ categoria.nombre }}</li>
+            </ol>
+        </nav>
+        
+        <h1 class="display-5">{{ categoria.nombre }}</h1>
+        {% if categoria.descripcion %}
+            <p class="text-muted">{{ categoria.descripcion }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    {% for post in posts %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if post.imagen_portada %}
+                    <img src="{{ post.imagen_portada.url }}" class="card-img-top" alt="{{ post.titulo }}">
+                {% else %}
+                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <span>Sin imagen</span>
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <small class="text-muted">
+                        {{ post.fecha_publicacion|date:"d/m/Y" }}
+                    </small>
+                    <h5 class="card-title mt-2">
+                        <a href="{% url 'blog:detalle_post' post.slug %}" class="text-decoration-none text-dark">{{ post.titulo }}</a>
+                    </h5>
+                    <p class="card-text">{{ post.get_resumen }}</p>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <small class="text-muted">Por {{ post.autor.username }}</small>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No hay publicaciones en esta categoría.
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% if posts.has_other %}
+<nav aria-label="Navegación de páginas">
+    <ul class="pagination justify-content-center">
+        {% if posts.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ posts.previous_page_number }}">Anterior</a>
+            </li>
+        {% endif %}
+        
+        {% for num in posts.paginator.page_range %}
+            {% if posts.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if posts.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ posts.next_page_number }}">Siguiente</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
