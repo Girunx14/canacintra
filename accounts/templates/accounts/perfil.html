@@ -1,82 +1,87 @@
 {% extends 'base.html' %}
 
-{% block title %}Perfil - Canacintra{% endblock %}
+{% block title %}Mi Perfil - Canacintra{% endblock %}
 
 {% block content %}
-<div class="profile-header">
+<div style="background: #f8f9fa; padding: 3rem 0 4rem; margin-bottom: 3rem;">
     <div class="container">
-        <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=ddd&color=666" alt="{{ user.username }}" class="profile-avatar">
-        <h2 class="mb-2">{{ user.get_full_name|default:user.username }}</h2>
-        <p class="text-secondary">@{{ user.username }}</p>
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=0066cc&color=fff&size=120" 
+                     alt="{{ user.username }}" 
+                     style="width: 100px; height: 100px; border-radius: 50%;">
+            </div>
+            <div class="col">
+                <h1 style="margin-bottom: 0.5rem;">{{ user.get_full_name|default:user.username }}</h1>
+                <p class="text-secondary">@{{ user.username }}</p>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="container py-5">
-    <div class="row">
+<div class="container">
+    <div class="row g-4">
         <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Información</h5>
-                    <div class="mb-3">
-                        <small class="text-secondary d-block">USUARIO</small>
-                        {{ user.username }}
-                    </div>
-                    <div class="mb-3">
-                        <small class="text-secondary d-block">EMAIL</small>
-                        {{ user.email|default:"No especificado" }}
-                    </div>
-                    <div class="mb-3">
-                        <small class="text-secondary d-block">ALTA</small>
-                        {{ user.date_joined|date:"d/m/Y" }}
-                    </div>
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 2rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1.5rem;">Información</h3>
+                
+                <div class="mb-4">
+                    <small class="text-secondary d-block" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Email</small>
+                    <div style="font-size: 1rem;">{{ user.email|default:"No especificado" }}</div>
+                </div>
+                
+                <div class="mb-4">
+                    <small class="text-secondary d-block" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Usuario</small>
+                    <div style="font-size: 1rem;">{{ user.username }}</div>
+                </div>
+                
+                <div>
+                    <small class="text-secondary d-block" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Fecha de alta</small>
+                    <div style="font-size: 1rem;">{{ user.date_joined|date:"d/m/Y" }}</div>
                 </div>
             </div>
             
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Estadísticas</h5>
-                    <div class="row">
-                        <div class="col-6">
-                            <h3 class="mb-0">{{ user.posts.count }}</h3>
-                            <small class="text-secondary">Publicaciones</small>
-                        </div>
-                        <div class="col-6">
-                            <h3 class="mb-0">{{ user.comentarios.count }}</h3>
-                            <small class="text-secondary">Comentarios</small>
-                        </div>
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 2rem; margin-top: 2rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1.5rem;">Estadísticas</h3>
+                <div class="row">
+                    <div class="col-6">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #0066cc;">{{ user.posts.count }}</div>
+                        <div class="text-secondary">Publicaciones</div>
+                    </div>
+                    <div class="col-6">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #0066cc;">{{ user.comentarios.count }}</div>
+                        <div class="text-secondary">Comentarios</div>
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Acciones</h5>
-                    <a href="{% url 'accounts:logout' %}" class="btn btn-outline-primary w-100 mb-2">
-                        Cerrar Sesión
-                    </a>
-                </div>
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 2rem; margin-bottom: 2rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Acciones</h3>
+                <a href="{% url 'accounts:logout' %}" style="display: block; text-align: center; padding: 0.875rem; background: #1a1a1a; color: white; text-decoration: none; border-radius: 4px; font-weight: 500;">
+                    Cerrar Sesión
+                </a>
             </div>
             
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Mis Publicaciones</h5>
-                    {% if user.posts.exists %}
-                        <ul class="list-unstyled mb-0">
-                            {% for post in user.posts.all %}
-                                <li class="mb-2">
-                                    <a href="{% url 'blog:detalle_post' post.slug %}">{{ post.titulo }}</a>
-                                    <span class="badge" style="background:{{ post.publicado|yesno:'#28a745,#ffc107' }};font-size:0.7rem;">
-                                        {{ post.publicado|yesno:'Publicado,Borrador' }}
-                                    </span>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="text-secondary mb-0">Sin publicaciones.</p>
-                    {% endif %}
-                </div>
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 2rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1.5rem;">Mis Publicaciones</h3>
+                {% if user.posts.exists %}
+                    <ul class="list-unstyled mb-0">
+                        {% for post in user.posts.all %}
+                            <li style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;" class="{% if not forloop.last %}{% endif %}">
+                                <a href="{% url 'blog:detalle_post' post.slug %}" style="color: #0066cc; text-decoration: none; font-weight: 500;">
+                                    {{ post.titulo }}
+                                </a>
+                                <span style="display: inline-block; margin-left: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.8rem; background: {{ post.publicado|yesno:'#e6f4ea,#fef3c7' }}; color: {{ post.publicado|yesno:'#137333:#b7791f' }};">
+                                    {{ post.publicado|yesno:'Publicado:Borrador' }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-secondary mb-0" style="text-align: center; padding: 2rem 0;">Sin publicaciones</p>
+                {% endif %}
             </div>
         </div>
     </div>
