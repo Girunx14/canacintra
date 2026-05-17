@@ -4,162 +4,50 @@
 {% block title %}Inicio - Canacintra{% endblock %}
 
 {% block content %}
-<!-- Hero Section con Slider -->
-<section class="hero-section py-5">
-    <div class="container py-4">
-        <div id="newsCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
-            <div class="carousel-indicators">
-                {% for post in posts|slice:":5" %}
-                    <button type="button" data-bs-target="#newsCarousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %} aria-current="{% if forloop.first %}true{% endif %}"></button>
-                {% endfor %}
-            </div>
-            <div class="carousel-inner" style="border-radius: var(--radius-xl); overflow: hidden;">
-                {% for post in posts|slice:":5" %}
-                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                        {% if post.imagen_portada %}
-                            <img src="{{ post.imagen_portada.url }}" class="d-block w-100" alt="{{ post.titulo }}" style="height: 500px; object-fit: cover;">
-                        {% else %}
-                            <div class="d-block w-100 bg-gradient" style="height: 500px; background: linear-gradient(135deg, var(--primary-800) 0%, var(--primary-600) 100%); display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-image" style="font-size: 5rem; color: rgba(255,255,255,0.3);"></i>
-                            </div>
-                        {% endif %}
-                        <div class="carousel-caption d-none d-md-block">
-                            <span class="badge-category mb-2">{{ post.categoria.nombre|default:'NOTICIA' }}</span>
-                            <h2 class="display-5 fw-bold mb-3" style="text-shadow: 0 2px 4px rgba(0,0,0,0.3);">{{ post.titulo }}</h2>
-                            <p class="lead mb-4" style="text-shadow: 0 1px 2px rgba(0,0,0,0.3);">{{ post.get_resumen }}</p>
-                            <a href="{% url 'blog:detalle_post' post.slug %}" class="btn btn-light btn-lg" style="border-radius: var(--radius-full); padding: 0.75rem 2rem;">
-                                <i class="bi bi-arrow-right me-2"></i>Leer más
-                            </a>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#newsCarousel" data-bs-slide="prev" style="width: 5%; background: rgba(0,0,0,0.2);">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Anterior</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#newsCarousel" data-bs-slide="next" style="width: 5%; background: rgba(0,0,0,0.2);">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Siguiente</span>
-            </button>
-        </div>
-    </div>
-</section>
-
-<!-- Últimas Noticias -->
-<section class="py-5" style="background: var(--background);">
+<section class="py-5">
     <div class="container">
-        <div class="row mb-5 align-items-center">
-            <div class="col-md-8">
-                <h2 class="section-title fw-bold mb-2">
-                    <i class="bi bi-newspaper me-2" style="color: var(--primary-700);"></i>Últimas Noticias
-                </h2>
-                <p class="text-muted" style="margin-top: -0.5rem;">Mantente informado con las noticias más recientes</p>
-            </div>
-            <div class="col-md-4 text-md-end">
-                <a href="{% url 'blog:lista_posts' %}" class="btn btn-outline-primary" style="border-radius: var(--radius-full);">
-                    Ver todas <i class="bi bi-arrow-right ms-1"></i>
-                </a>
+        <div class="row mb-5">
+            <div class="col-12">
+                <h1 class="mb-3">Últimas Noticias</h1>
+                <p class="text-secondary">Mantente informado con las noticias más recientes</p>
             </div>
         </div>
         
         <div class="row g-4">
             {% for post in posts %}
-                <div class="col-md-6 col-lg-4 animate-in" style="animation-delay: {{ forloop.counter0 }}100ms;">
+                <div class="col-md-6 col-lg-4">
                     <div class="news-card h-100">
                         {% if post.imagen_portada %}
-                            <div style="overflow: hidden;">
-                                <img src="{{ post.imagen_portada.url }}" alt="{{ post.titulo }}">
-                            </div>
+                            <img src="{{ post.imagen_portada.url }}" alt="{{ post.titulo }}">
                         {% else %}
-                            <div style="height: 240px; background: linear-gradient(135deg, var(--primary-200) 0%, var(--primary-100) 100%); display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-image" style="font-size: 3rem; color: var(--primary-400);"></i>
+                            <div style="width:100%;aspect-ratio:16/9;background:#f5f5f5;display:flex;align-items:center;justify-content:center;">
+                                <i class="bi bi-image" style="color:#ccc;font-size:2rem;"></i>
                             </div>
                         {% endif %}
                         <div class="card-body">
                             {% if post.categoria %}
-                                <a href="{% url 'blog:por_categoria' post.categoria.slug %}" class="text-decoration-none">
-                                    <span class="badge-category mb-2 d-inline-block">{{ post.categoria.nombre }}</span>
-                                </a>
+                                <span class="badge" style="background:#f5f5f5;color:#666;margin-bottom:0.5rem;">{{ post.categoria.nombre }}</span>
                             {% endif %}
                             <h5 class="card-title">
-                                <a href="{% url 'blog:detalle_post' post.slug %}" class="text-decoration-none text-dark">
-                                    {{ post.titulo }}
-                                </a>
+                                <a href="{% url 'blog:detalle_post' post.slug %}">{{ post.titulo }}</a>
                             </h5>
-                            <div class="news-meta" style="gap: 1rem;">
-                                <span><i class="bi bi-calendar me-1"></i>{{ post.fecha_publicacion|date:"d/m/Y" }}</span>
-                                <span><i class="bi bi-person me-1"></i>{{ post.autor.username }}</span>
+                            <div class="news-meta">
+                                {{ post.fecha_publicacion|date:"d/m/Y" }} • {{ post.autor.username }}
                             </div>
-                            <p class="card-text text-muted" style="line-height: 1.7;">{{ post.get_resumen }}</p>
-                            <a href="{% url 'blog:detalle_post' post.slug %}" class="btn btn-primary" style="border-radius: var(--radius-full);">
-                                <i class="bi bi-arrow-right me-1"></i>Saber más
-                            </a>
+                            <p class="text-secondary" style="font-size:0.9rem;">{{ post.get_resumen }}</p>
                         </div>
                     </div>
                 </div>
             {% empty %}
                 <div class="col-12">
-                    <div class="alert alert-info text-center py-5" style="border-radius: var(--radius-xl); border: none; background: var(--primary-50);">
-                        <i class="bi bi-info-circle" style="font-size: 3rem; color: var(--primary-500); margin-bottom: 1rem;"></i>
-                        <h5 class="mt-3">Próximamente</h5>
-                        <p class="text-muted">Las noticias se cargarán pronto. ¡Vuelve más tarde!</p>
-                    </div>
+                    <p class="text-secondary text-center">No hay publicaciones aún.</p>
                 </div>
             {% endfor %}
         </div>
         
         <div class="text-center mt-5">
-            <a href="{% url 'blog:lista_posts' %}" class="btn btn-primary btn-lg" style="border-radius: var(--radius-full); padding: 0.75rem 3rem;">
-                Ver todas las noticias <i class="bi bi-arrow-right ms-2"></i>
-            </a>
+            <a href="{% url 'blog:lista_posts' %}" class="btn btn-outline-primary">Ver todas las noticias</a>
         </div>
-    </div>
-</section>
-
-<!-- Sección de Categorías -->
-<section class="py-5" style="background: white;">
-    <div class="container">
-        <h2 class="section-title fw-bold text-center mb-2">
-            <i class="bi bi-grid me-2" style="color: var(--primary-700);"></i>Categorías
-        </h2>
-        <p class="text-muted text-center mb-5">Explora las noticias por temas de tu interés</p>
-        
-        <div class="row g-4">
-            {% get_categories as categories %}
-            {% for cat in categories|slice:":6" %}
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="{% url 'blog:por_categoria' cat.slug %}" class="text-decoration-none">
-                        <div class="card text-center h-100 border-0" style="transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: var(--radius-xl);">
-                            <div class="card-body py-4">
-                                <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background: linear-gradient(135deg, var(--primary-100) 0%, var(--primary-200) 100%); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
-                                    <i class="bi bi-folder" style="font-size: 1.75rem; color: var(--primary-700);"></i>
-                                </div>
-                                <h6 class="card-title mb-2" style="font-weight: 600; color: var(--neutral-800);">{{ cat.nombre }}</h6>
-                                <small class="text-muted">{{ cat.posts.count }} noticias</small>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-
-<!-- Call to Action -->
-<section class="py-5" style="background: var(--gradient-hero);">
-    <div class="container text-center">
-        <h2 class="text-white mb-3">¿Quieres mantenerte actualizado?</h2>
-        <p class="text-white-50 mb-4">Suscríbete para recibir las últimas noticias</p>
-        {% if user.is_authenticated %}
-            <a href="{% url 'blog:lista_posts' %}" class="btn btn-light btn-lg" style="border-radius: var(--radius-full);">
-                <i class="bi bi-envelope me-2"></i>Ver noticias
-            </a>
-        {% else %}
-            <a href="{% url 'accounts:registro' %}" class="btn btn-light btn-lg" style="border-radius: var(--radius-full);">
-                <i class="bi bi-person-plus me-2"></i>Regístrate gratis
-            </a>
-        {% endif %}
     </div>
 </section>
 {% endblock %}

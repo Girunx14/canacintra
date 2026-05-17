@@ -1,149 +1,84 @@
 {% extends 'base.html' %}
 
-{% block title %}Mi Perfil - Canacintra{% endblock %}
+{% block title %}Perfil - Canacintra{% endblock %}
 
 {% block content %}
-<!-- Profile Header -->
 <div class="profile-header">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-2 text-center">
-                <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=fff&color=1a365d&size=200" 
-                     alt="{{ user.username }}" 
-                     class="profile-avatar">
-            </div>
-            <div class="col-md-10">
-                <h1 class="mb-2">{{ user.get_full_name|default:user.username }}</h1>
-                <p class="mb-0 opacity-75"><i class="bi bi-person me-1"></i>{{ user.username }}</p>
-            </div>
-        </div>
+        <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=ddd&color=666" alt="{{ user.username }}" class="profile-avatar">
+        <h2 class="mb-2">{{ user.get_full_name|default:user.username }}</h2>
+        <p class="text-secondary">@{{ user.username }}</p>
     </div>
 </div>
 
-<!-- Profile Content -->
-<section class="py-4">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4">
-                <div class="card mb-4">
-                    <div class="card-header" style="background: var(--primary-color); color: white;">
-                        <h5 class="mb-0"><i class="bi bi-person me-2"></i>Información Personal</h5>
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Información</h5>
+                    <div class="mb-3">
+                        <small class="text-secondary d-block">USUARIO</small>
+                        {{ user.username }}
                     </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label class="text-muted small">NOMBRE COMPLETO</label>
-                            <p class="mb-0 fw-bold">{{ user.get_full_name|default:"-" }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="text-muted small">USUARIO</label>
-                            <p class="mb-0 fw-bold">{{ user.username }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="text-muted small">CORREO ELECTRÓNICO</label>
-                            <p class="mb-0 fw-bold">{{ user.email|default:"No especificado" }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="text-muted small">FECHA DE ALTA</label>
-                            <p class="mb-0 fw-bold">{{ user.date_joined|date:"d/m/Y" }}</p>
-                        </div>
+                    <div class="mb-3">
+                        <small class="text-secondary d-block">EMAIL</small>
+                        {{ user.email|default:"No especificado" }}
                     </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header" style="background: var(--primary-color); color: white;">
-                        <h5 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Estadísticas</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="text-center mb-3">
-                            <i class="bi bi-newspaper" style="font-size: 3rem; color: var(--accent-color);"></i>
-                            <h3 class="mt-2 mb-0">{{ user.posts.count }}</h3>
-                            <small class="text-muted">Publicaciones</small>
-                        </div>
-                        <hr>
-                        <div class="text-center">
-                            <i class="bi bi-chat" style="font-size: 3rem; color: var(--secondary-color);"></i>
-                            <h3 class="mt-2 mb-0">{{ user.comentarios.count }}</h3>
-                            <small class="text-muted">Comentarios</small>
-                        </div>
+                    <div class="mb-3">
+                        <small class="text-secondary d-block">ALTA</small>
+                        {{ user.date_joined|date:"d/m/Y" }}
                     </div>
                 </div>
             </div>
             
-            <div class="col-lg-8">
-                <!-- Acciones -->
-                <div class="card mb-4">
-                    <div class="card-header" style="background: var(--secondary-color); color: white;">
-                        <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Acciones</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <a href="#" class="btn btn-outline-primary w-100">
-                                    <i class="bi bi-pencil-square me-2"></i>Modificar Perfil
-                                </a>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <a href="#" class="btn btn-outline-secondary w-100">
-                                    <i class="bi bi-key me-2"></i>Cambiar Contraseña
-                                </a>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <a href="{% url 'accounts:logout' %}" class="btn btn-danger w-100">
-                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
-                                </a>
-                            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Estadísticas</h5>
+                    <div class="row">
+                        <div class="col-6">
+                            <h3 class="mb-0">{{ user.posts.count }}</h3>
+                            <small class="text-secondary">Publicaciones</small>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Publicaciones del usuario -->
-                <div class="card">
-                    <div class="card-header" style="background: var(--primary-color); color: white;">
-                        <h5 class="mb-0"><i class="bi bi-newspaper me-2"></i>Mis Publicaciones</h5>
-                    </div>
-                    <div class="card-body">
-                        {% if user.posts.exists %}
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Título</th>
-                                            <th>Categoría</th>
-                                            <th>Estado</th>
-                                            <th>Fecha</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for post in user.posts.all %}
-                                            <tr>
-                                                <td>
-                                                    <a href="{% url 'blog:detalle_post' post.slug %}" class="text-decoration-none">
-                                                        {{ post.titulo }}
-                                                    </a>
-                                                </td>
-                                                <td>{{ post.categoria.nombre|default:"Sin categoría" }}</td>
-                                                <td>
-                                                    {% if post.publicado %}
-                                                        <span class="badge bg-success">Publicado</span>
-                                                    {% else %}
-                                                        <span class="badge bg-warning">Borrador</span>
-                                                    {% endif %}
-                                                </td>
-                                                <td>{{ post.fecha_publicacion|date:"d/m/Y" }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% else %}
-                            <p class="text-muted text-center mb-0">
-                                <i class="bi bi-info-circle me-1"></i>No has realizado publicaciones aún.
-                            </p>
-                        {% endif %}
+                        <div class="col-6">
+                            <h3 class="mb-0">{{ user.comentarios.count }}</h3>
+                            <small class="text-secondary">Comentarios</small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Acciones</h5>
+                    <a href="{% url 'accounts:logout' %}" class="btn btn-outline-primary w-100 mb-2">
+                        Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Mis Publicaciones</h5>
+                    {% if user.posts.exists %}
+                        <ul class="list-unstyled mb-0">
+                            {% for post in user.posts.all %}
+                                <li class="mb-2">
+                                    <a href="{% url 'blog:detalle_post' post.slug %}">{{ post.titulo }}</a>
+                                    <span class="badge" style="background:{{ post.publicado|yesno:'#28a745,#ffc107' }};font-size:0.7rem;">
+                                        {{ post.publicado|yesno:'Publicado,Borrador' }}
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-secondary mb-0">Sin publicaciones.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
-</section>
+</div>
 {% endblock %}
