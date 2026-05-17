@@ -2,7 +2,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Post, Categoria, Tag, Comentario
+from django.db.models import Q
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+import re
+from .models import Post, Categoria, Tag, Comentario, Suscriptor
 from .forms import ComentarioForm
 
 
@@ -85,3 +89,70 @@ def por_tag(request, slug):
         'tag': tag,
         'posts': posts
     })
+
+
+def buscar(request):
+    """Busca publicaciones por término."""
+    query = request.GET.get('q', '')
+    posts = Post.objects.filter(publicado=True).select_related('autor', 'categoria')
+    
+    if query:
+        posts = posts.filter(
+            Q(titulo__icontains=query) |
+            Q(contenido__icontains=query) |
+            Q(resumen__icontains=query)
+        )
+    
+    paginator = Paginator(posts, 9)
+    page = request.GET.get('page')
+    posts = paginator.get_page(page)
+    
+    return render(request, 'blog/buscar.html', {
+        'posts': posts,
+        'query': query
+    })
+
+
+@require_POST
+def suscribir(request):
+    """Registra una nueva suscripción por correo electrónico vía AJAX."""
+    email = request.POST.get('email', '').strip()
+    
+    if not email:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Por favor, introduce una dirección de correo electrónico.'
+        }, status=400)
+    
+    if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
+        return JsonResponse({
+            'status': 'error',
+            'message': 'El formato de correo electrónico no es válido.'
+        }, status=400)
+        
+    try:
+        suscriptor, creado = Suscriptor.objects.get_or_create(email=email)
+        if creado:
+            return JsonResponse({
+                'status': 'success',
+                'message': '¡Gracias por suscribirte a nuestro boletín de noticias!'
+            })
+        else:
+            if not suscriptor.activo:
+                suscriptor.activo = True
+                suscriptor.save()
+                return JsonResponse({
+                    'status': 'success',
+                    'message': '¡Tu suscripción ha sido reactivada con éxito!'
+                })
+            return JsonResponse({
+                'status': 'info',
+                'message': 'Esta dirección de correo electrónico ya está suscrita.'
+            })
+    except Exception:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Hubo un error al procesar tu solicitud. Por favor, intenta de nuevo.'
+        }, status=500)
+
+

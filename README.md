@@ -101,4 +101,4 @@ El proyecto incluye los siguientes modelos:
 - [ ] API REST con Django REST Framework
 - [ ] Modo oscuro/claro
 - [ ] Suscripción por email
-- ] Exportar a PDF
+- [ ] Exportar a PDF

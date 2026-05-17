@@ -58,7 +58,7 @@ ROOT_URLCONF = 'canacintra.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,3 +131,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Media files (Images)
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Redirección para decoradores @login_required
+LOGIN_URL = 'accounts:login'
+

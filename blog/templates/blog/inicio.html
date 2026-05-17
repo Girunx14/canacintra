@@ -1,57 +1,138 @@
 {% extends 'base.html' %}
+{% load blog_tags %}
 
 {% block title %}Inicio - Canacintra{% endblock %}
 
 {% block content %}
-<div class="jumbotron bg-light p-5 rounded-3 mb-4">
-    <h1 class="display-4">¡Bienvenido a Canacintra!</h1>
-    <p class="lead">Tu sitio de noticias y actualizaciones.</p>
-    <hr class="my-4">
-    <p>Explora las últimas publicaciones y mantente informado.</p>
-    <a class="btn btn-primary btn-lg" href="{% url 'blog:lista_posts' %}">Ver todas las noticias</a>
-</div>
-
-<h2 class="mb-4">Últimas Publicaciones</h2>
-<div class="row">
-    {% for post in posts %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                {% if post.imagen_portada %}
-                    <img src="{{ post.imagen_portada.url }}" class="card-img-top" alt="{{ post.titulo }}">
-                {% else %}
-                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-                        <span>Sin imagen</span>
-                    </div>
-                {% endif %}
-                <div class="card-body">
-                    <small class="text-muted">
-                        {% if post.categoria %}
-                            <a href="{% url 'blog:por_categoria' post.categoria.slug %}" class="text-decoration-none">{{ post.categoria.nombre }}</a> | 
+<!-- Hero Section con Slider -->
+<section class="hero-section">
+    <div class="container">
+        <div id="newsCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                {% for post in posts|slice:":5" %}
+                    <button type="button" data-bs-target="#newsCarousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></button>
+                {% endfor %}
+            </div>
+            <div class="carousel-inner">
+                {% for post in posts|slice:":5" %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        {% if post.imagen_portada %}
+                            <img src="{{ post.imagen_portada.url }}" class="d-block w-100" alt="{{ post.titulo }}">
+                        {% else %}
+                            <div class="d-block w-100 bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 400px;">
+                                <i class="bi bi-image" style="font-size: 4rem;"></i>
+                            </div>
                         {% endif %}
-                        {{ post.fecha_publicacion|date:"d/m/Y" }}
-                    </small>
-                    <h5 class="card-title mt-2">
-                        <a href="{% url 'blog:detalle_post' post.slug %}" class="text-decoration-none text-dark">{{ post.titulo }}</a>
-                    </h5>
-                    <p class="card-text">{{ post.get_resumen }}</p>
-                </div>
-                <div class="card-footer bg-white border-0">
-                    <small class="text-muted">Por {{ post.autor.username }}</small>
-                </div>
+                        <div class="carousel-caption d-none d-md-block">
+                            <h2 class="display-6 fw-bold">{{ post.titulo }}</h2>
+                            <p class="lead">{{ post.get_resumen }}</p>
+                            <a href="{% url 'blog:detalle_post' post.slug %}" class="btn btn-light btn-lg">
+                                <i class="bi bi-arrow-right me-2"></i>Leer más
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#newsCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#newsCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
         </div>
-    {% empty %}
-        <div class="col-12">
-            <div class="alert alert-info">
-                No hay publicaciones disponibles aún.
-            </div>
-        </div>
-    {% endfor %}
-</div>
+    </div>
+</section>
 
-<div class="text-center mt-4">
-    <a href="{% url 'blog:lista_posts' %}" class="btn btn-outline-primary btn-lg">
-        Ver todas las noticias →
-    </a>
-</div>
+<!-- Últimas Noticias -->
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-8">
+                <h2 class="fw-bold" style="color: var(--primary-color);">
+                    <i class="bi bi-newspaper me-2"></i>Últimas Noticias
+                </h2>
+                <p class="text-muted">Mantente informado con las noticias más recientes</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'blog:lista_posts' %}" class="btn btn-outline-primary">
+                    Ver todas <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            {% for post in posts %}
+                <div class="col-md-4 mb-4 animate-in" style="animation-delay: {{ forloop.counter0 }}00ms;">
+                    <div class="news-card h-100">
+                        {% if post.imagen_portada %}
+                            <img src="{{ post.imagen_portada.url }}" alt="{{ post.titulo }}">
+                        {% else %}
+                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 220px;">
+                                <i class="bi bi-image" style="font-size: 3rem;"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            {% if post.categoria %}
+                                <span class="badge-category mb-2 d-inline-block">{{ post.categoria.nombre }}</span>
+                            {% endif %}
+                            <h5 class="card-title">
+                                <a href="{% url 'blog:detalle_post' post.slug %}" class="text-decoration-none text-dark">
+                                    {{ post.titulo }}
+                                </a>
+                            </h5>
+                            <div class="news-meta">
+                                <i class="bi bi-calendar me-1"></i>{{ post.fecha_publicacion|date:"d/m/Y" }}
+                                <span class="mx-2">|</span>
+                                <i class="bi bi-person me-1"></i>{{ post.autor.username }}
+                            </div>
+                            <p class="card-text text-muted">{{ post.get_resumen }}</p>
+                            <a href="{% url 'blog:detalle_post' post.slug %}" class="btn btn-primary">
+                                <i class="bi bi-arrow-right me-1"></i>Saber más
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <i class="bi bi-info-circle me-2"></i>No hay publicaciones disponibles aún.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'blog:lista_posts' %}" class="btn btn-primary btn-lg">
+                Ver todas las noticias <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Sección de Categorías -->
+<section class="py-5" style="background: white;">
+    <div class="container">
+        <h2 class="fw-bold text-center mb-5" style="color: var(--primary-color);">
+            <i class="bi bi-grid me-2"></i>Categorías
+        </h2>
+        <div class="row">
+            {% get_categories as categories %}
+            {% for cat in categories|slice:":6" %}
+                <div class="col-md-4 col-lg-2 mb-3">
+                    <a href="{% url 'blog:por_categoria' cat.slug %}" class="text-decoration-none">
+                        <div class="card text-center h-100" style="transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <div class="card-body">
+                                <i class="bi bi-folder" style="font-size: 2rem; color: var(--primary-color);"></i>
+                                <h6 class="card-title mt-2" style="color: var(--secondary-color);">{{ cat.nombre }}</h6>
+                                <small class="text-muted">{{ cat.posts.count }} noticias</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
 {% endblock %}

@@ -1,160 +1,229 @@
 {% extends 'base.html' %}
+{% load blog_tags %}
 
 {% block title %}{{ post.titulo }} - Canacintra{% endblock %}
 
 {% block content %}
-<article class="mb-5">
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <header class="mb-4">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'blog:inicio' %}">Inicio</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'blog:lista_posts' %}">Noticias</a></li>
-                        {% if post.categoria %}
-                            <li class="breadcrumb-item">
-                                <a href="{% url 'blog:por_categoria' post.categoria.slug %}">{{ post.categoria.nombre }}</a>
-                            </li>
-                        {% endif %}
-                        <li class="breadcrumb-item active">{{ post.titulo|truncatewords:5 }}</li>
-                    </ol>
-                </nav>
-                
-                <h1 class="display-6 mb-3">{{ post.titulo }}</h1>
-                
-                <div class="text-muted mb-3">
-                    <small>
-                        {% if post.categoria %}
-                            <a href="{% url 'blog:por_categoria' post.categoria.slug %}" class="text-decoration-none">
-                                {{ post.categoria.nombre }}
-                            </a> |
-                        {% endif %}
-                        Por <strong>{{ post.autor.username }}</strong> | 
-                        {{ post.fecha_publicacion|date:"d de F, Y" }}
-                    </small>
-                </div>
-                
-                {% if post.imagen_portada %}
-                    <figure class="figure mb-4">
-                        <img src="{{ post.imagen_portada.url }}" class="img-fluid rounded" alt="{{ post.titulo }}">
-                    </figure>
+<!-- Header de la noticia -->
+<section style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white; padding: 3rem 0;">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                <li class="breadcrumb-item"><a href="/" style="color: white;">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'blog:lista_posts' %}" style="color: white;">Noticias</a></li>
+                {% if post.categoria %}
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'blog:por_categoria' post.categoria.slug %}" style="color: white;">{{ post.categoria.nombre }}</a>
+                    </li>
                 {% endif %}
-            </header>
-            
-            <div class="post-content mb-4">
-                {{ post.contenido|linebreaks }}
+                <li class="breadcrumb-item active" aria-current="page" style="color: rgba(255,255,255,0.7);">{{ post.titulo|truncatewords:5 }}</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Contenido principal -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <article>
+                    <div class="mb-4">
+                        <h1 class="display-5 fw-bold" style="color: var(--primary-color);">{{ post.titulo }}</h1>
+                        
+                        <div class="d-flex align-items-center text-muted mb-3">
+                            <i class="bi bi-calendar me-2"></i>
+                            <span class="me-3">{{ post.fecha_publicacion|date:"d de F, Y" }}</span>
+                            
+                            {% if post.categoria %}
+                                <span class="badge-category me-3">{{ post.categoria.nombre }}</span>
+                            {% endif %}
+                            
+                            <i class="bi bi-person me-2"></i>
+                            <span>{{ post.autor.username }}</span>
+                        </div>
+                        
+                        {% if post.imagen_portada %}
+                            <figure class="figure w-100 mb-4">
+                                <img src="{{ post.imagen_portada.url }}" class="figure-img img-fluid rounded" alt="{{ post.titulo }}" style="width: 100%; max-height: 500px; object-fit: cover;">
+                            </figure>
+                        {% endif %}
+                        
+                        {% if post.resumen %}
+                            <div class="alert alert-light border-start border-4" style="border-color: var(--accent-color) !important;">
+                                <p class="lead mb-0">{{ post.resumen }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="post-content mb-4" style="line-height: 1.8; font-size: 1.1rem;">
+                        {{ post.contenido|linebreaks }}
+                    </div>
+                    
+                    {% if tags %}
+                        <footer class="border-top pt-4">
+                            <div class="mb-3">
+                                <strong><i class="bi bi-tags me-2"></i>Etiquetas:</strong>
+                                {% for tag in tags %}
+                                    <a href="{% url 'blog:por_tag' tag.slug %}" class="badge" style="background: var(--secondary-color); text-decoration: none; margin-right: 0.5rem;">
+                                        {{ tag.nombre }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{% url 'blog:lista_posts' %}" class="btn btn-outline-primary">
+                                    <i class="bi bi-arrow-left me-1"></i>Volver al listado
+                                </a>
+                                
+                                <button class="btn btn-outline-secondary" onclick="compartir()">
+                                    <i class="bi bi-share me-1"></i>Compartir
+                                </button>
+                            </div>
+                        </footer>
+                    {% endif %}
+                </article>
             </div>
             
-            {% if tags %}
-            <footer class="border-top pt-3">
-                <div class="mb-3">
-                    <strong>Etiquetas:</strong>
-                    {% for tag in tags %}
-                        <a href="{% url 'blog:por_tag' tag.slug %}" class="badge bg-secondary text-decoration-none me-1">
-                            {{ tag.nombre }}
-                        </a>
-                    {% endfor %}
-                </div>
-                
-                <div class="d-flex justify-content-between align-items-center">
-                    <a href="{% url 'blog:lista_posts' %}" class="btn btn-outline-primary">
-                        ← Volver al listado
-                    </a>
-                    
-                    <div>
-                        <button class="btn btn-outline-secondary" onclick="compartir()">
-                            Compartir
-                        </button>
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Noticias Relacionadas -->
+                <div class="card mb-4">
+                    <div class="card-header" style="background: var(--primary-color); color: white;">
+                        <h5 class="mb-0"><i class="bi bi-newspaper me-2"></i>Otras Noticias</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if posts_relacionados %}
+                            {% for relacionado in posts_relacionados %}
+                                <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                                    <a href="{% url 'blog:detalle_post' relacionado.slug %}" class="text-decoration-none">
+                                        <h6 class="mb-1" style="color: var(--primary-color);">{{ relacionado.titulo }}</h6>
+                                        <small class="text-muted">{{ relacionado.fecha_publicacion|date:"d/m/Y" }}</small>
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted mb-0">No hay noticias relacionadas.</p>
+                        {% endif %}
                     </div>
                 </div>
-            </footer>
-            {% endif %}
+                
+                <!-- Categorías -->
+                <div class="card">
+                    <div class="card-header" style="background: var(--primary-color); color: white;">
+                        <h5 class="mb-0"><i class="bi bi-grid me-2"></i>Categorías</h5>
+                    </div>
+                    <div class="card-body">
+                        {% get_categories as categories %}
+                        <ul class="list-unstyled mb-0">
+                            {% for cat in categories %}
+                                <li class="mb-2">
+                                    <a href="{% url 'blog:por_categoria' cat.slug %}" class="text-decoration-none d-flex justify-content-between align-items-center">
+                                        <span style="color: var(--primary-color);">{{ cat.nombre }}</span>
+                                        <span class="badge" style="background: var(--accent-color);">{{ cat.posts.count }}</span>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</article>
+</section>
 
 <!-- Sección de Comentarios -->
-<section class="border-top pt-4 mt-5">
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <h3 class="mb-4">
-                Comentarios 
-                <span class="badge bg-secondary">{{ post.get_comentarios_count }}</span>
-            </h3>
-            
-            {% if user.is_authenticated %}
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5>Dejar un comentario</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="post">
-                            {% csrf_token %}
-                            {% if form %}
-                                <div class="mb-3">
-                                    {{ form.contenido.label_tag }}
-                                    {{ form.contenido }}
-                                    {% for error in form.contenido.errors %}
-                                        <div class="text-danger mt-1">{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                                <button type="submit" class="btn btn-primary">
-                                    Enviar comentario
-                                </button>
-                            {% endif %}
-                        </form>
-                    </div>
-                </div>
-            {% else %}
-                <div class="alert alert-info mb-4">
-                    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="alert-link">
-                        Inicia sesión
-                    </a> para dejar un comentario.
-                </div>
-            {% endif %}
-            
-            <div class="comentarios-list">
-                {% for comentario in comentarios %}
-                    <div class="card mb-3">
+<section class="py-5" style="background: var(--light-bg);">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h3 class="fw-bold mb-4" style="color: var(--primary-color);">
+                    <i class="bi bi-chat-left-text me-2"></i>Comentarios
+                    <span class="badge" style="background: var(--accent-color);">{{ post.get_comentarios_count }}</span>
+                </h3>
+                
+                <!-- Formulario de comentario -->
+                {% if user.is_authenticated %}
+                    <div class="card mb-4">
+                        <div class="card-header" style="background: var(--secondary-color); color: white;">
+                            <h5 class="mb-0">Dejar un comentario</h5>
+                        </div>
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0">{{ comentario.autor.username }}</h6>
-                                <small class="text-muted">{{ comentario.fecha_creacion|date:"d/m/Y H:i" }}</small>
-                            </div>
-                            <p class="card-text">{{ comentario.contenido|linebreaks }}</p>
+                            <form method="post">
+                                {% csrf_token %}
+                                {% if form %}
+                                    <div class="mb-3">
+                                        <label class="form-label">Tu comentario:</label>
+                                        {{ form.contenido }}
+                                        {% for error in form.contenido.errors %}
+                                            <div class="text-danger mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-send me-1"></i>Enviar comentario
+                                    </button>
+                                {% endif %}
+                            </form>
                         </div>
                     </div>
-                {% empty %}
-                    <p class="text-muted">Sé el primero en comentar esta publicación.</p>
-                {% endfor %}
+                {% else %}
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="alert-link">Inicia sesión</a> para dejar un comentario.
+                    </div>
+                {% endif %}
+                
+                <!-- Lista de comentarios -->
+                <div class="comentarios-list">
+                    {% for comentario in comentarios %}
+                        <div class="comment-card">
+                            <div class="comment-meta">
+                                <span class="comment-author">
+                                    <i class="bi bi-person-circle me-1"></i>{{ comentario.autor.username }}
+                                </span>
+                                <span class="comment-date">
+                                    <i class="bi bi-clock me-1"></i>{{ comentario.fecha_creacion|date:"d/m/Y H:i" }}
+                                </span>
+                            </div>
+                            <p class="mb-0">{{ comentario.contenido }}</p>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted text-center">Sé el primero en comentar esta publicación.</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-{% if posts_relacionados %}
-<section class="border-top pt-4 mt-5">
-    <h3 class="mb-4">Noticias Relacionadas</h3>
-    <div class="row">
-        {% for relacionado in posts_relacionados %}
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h6 class="card-title">
-                            <a href="{% url 'blog:detalle_post' relacionado.slug %}" class="text-decoration-none text-dark">
-                                {{ relacionado.titulo }}
-                            </a>
-                        </h6>
-                        <p class="card-text small text-muted">
-                            {{ relacionado.get_resumen }}
-                        </p>
-                    </div>
+<!-- Estadísticas -->
+<section class="py-4 border-top">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="d-flex align-items-center justify-content-center mb-2">
+                    <i class="bi bi-eye" style="font-size: 2rem; color: var(--primary-color);"></i>
                 </div>
+                <h5 class="mb-0">Visitas</h5>
+                <p class="text-muted">100+</p>
             </div>
-        {% endfor %}
+            <div class="col-md-4">
+                <div class="d-flex align-items-center justify-content-center mb-2">
+                    <i class="bi bi-chat" style="font-size: 2rem; color: var(--primary-color);"></i>
+                </div>
+                <h5 class="mb-0">Comentarios</h5>
+                <p class="text-muted">{{ post.get_comentarios_count }}</p>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center justify-content-center mb-2">
+                    <i class="bi bi-calendar" style="font-size: 2rem; color: var(--primary-color);"></i>
+                </div>
+                <h5 class="mb-0">Publicado</h5>
+                <p class="text-muted">{{ post.fecha_publicacion|date:"d/m/Y" }}</p>
+            </div>
+        </div>
     </div>
 </section>
-{% endif %}
 
 <script>
 function compartir() {
@@ -162,10 +231,11 @@ function compartir() {
         navigator.share({
             title: '{{ post.titulo }}',
             url: window.location.href
-        });
+        }).catch(console.error);
     } else {
-        navigator.clipboard.writeText(window.location.href);
-        alert('Enlace copiado al portapapeles');
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('¡Enlace copiado al portapapeles!');
+        });
     }
 }
 </script>

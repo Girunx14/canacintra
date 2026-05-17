@@ -127,3 +127,19 @@ class Comentario(models.Model):
 
     def __str__(self):
         return f'Comentario de {self.autor.username} en {self.post.titulo}'
+
+
+class Suscriptor(models.Model):
+    """Suscripciones a boletines por correo electrónico."""
+    email = models.EmailField(unique=True)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+    activo = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = 'Suscriptor'
+        verbose_name_plural = 'Suscriptores'
+        ordering = ['-fecha_registro']
+
+    def __str__(self):
+        return self.email
+

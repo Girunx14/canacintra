@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Categoria, Tag, Post, Comentario
+from .models import Categoria, Tag, Post, Comentario, Suscriptor
 
 
 @admin.register(Categoria)
@@ -68,3 +68,12 @@ class ComentarioAdmin(admin.ModelAdmin):
         queryset.update(aprobado=False)
         self.message_user(request, f'{queryset.count()} comentarios desaprobados.')
     desaprobar_seleccionados.short_description = 'Desaprobar comentarios seleccionados'
+
+
+@admin.register(Suscriptor)
+class SuscriptorAdmin(admin.ModelAdmin):
+    list_display = ['email', 'fecha_registro', 'activo']
+    list_filter = ['activo', 'fecha_registro']
+    search_fields = ['email']
+    ordering = ['-fecha_registro']
+

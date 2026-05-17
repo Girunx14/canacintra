@@ -9,7 +9,7 @@ from django.contrib import messages
 def registro(request):
     """Vista para registro de nuevos usuarios."""
     if request.user.is_authenticated:
-        return redirect('inicio')
+        return redirect('blog:inicio')
     
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -17,7 +17,7 @@ def registro(request):
             user = form.save()
             login(request, user)
             messages.success(request, '¡Cuenta creada exitosamente!')
-            return redirect('inicio')
+            return redirect('blog:inicio')
     else:
         form = UserCreationForm()
     
@@ -27,7 +27,7 @@ def registro(request):
 def login_usuario(request):
     """Vista para inicio de sesión de usuarios."""
     if request.user.is_authenticated:
-        return redirect('inicio')
+        return redirect('blog:inicio')
     
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -38,7 +38,7 @@ def login_usuario(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f'¡Bienvenido {username}!')
-                return redirect('inicio')
+                return redirect('blog:inicio')
     else:
         form = AuthenticationForm()
     
@@ -50,7 +50,7 @@ def logout_usuario(request):
     """Vista para cerrar sesión."""
     logout(request)
     messages.info(request, 'Has cerrado sesión correctamente.')
-    return redirect('inicio')
+    return redirect('blog:inicio')
 
 
 @login_required
