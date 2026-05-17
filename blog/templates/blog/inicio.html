@@ -5,15 +5,17 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section style="background: #f8f9fa; padding: 4rem 0; margin-bottom: 3rem;">
+<section style="background: #f8f9fa; padding: 5rem 0; margin-bottom: 4rem;">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h1 style="font-size: 2.5rem; font-weight: 600; margin-bottom: 1rem;">Últimas Noticias</h1>
-                <p class="text-secondary" style="font-size: 1.1rem;">Mantente informado con las noticias más recientes del sector industrial</p>
+            <div class="col-lg-7">
+                <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 1rem; letter-spacing: -1px;">Últimas Noticias</h1>
+                <p class="text-secondary" style="font-size: 1.25rem; line-height: 1.6; max-width: 600px;">
+                    Mantente informado con las noticias más recientes del sector industrial
+                </p>
             </div>
-            <div class="col-lg-4 text-lg-end">
-                <a href="{% url 'blog:lista_posts' %}" class="btn btn-outline-dark" style="padding: 0.75rem 2rem;">
+            <div class="col-lg-5 text-lg-end mt-3 mt-lg-0">
+                <a href="{% url 'blog:lista_posts' %}" class="btn btn-outline-dark btn-lg" style="padding: 1rem 2.5rem; font-size: 1rem;">
                     Ver todas →
                 </a>
             </div>
@@ -22,50 +24,61 @@
 </section>
 
 <!-- News Grid -->
-<section class="pb-5">
+<section style="margin-bottom: 5rem;">
     <div class="container">
-        <div class="row g-4">
+        <div class="row g-5">
             {% for post in posts %}
                 <div class="col-md-6 col-lg-4">
                     <article class="news-card h-100">
-                        <a href="{% url 'blog:detalle_post' post.slug %}" class="text-decoration-none">
+                        <a href="{% url 'blog:detalle_post' post.slug %}" class="text-decoration-none d-block">
                             {% if post.imagen_portada %}
-                                <div style="overflow: hidden; border-bottom: 1px solid #eee;">
-                                    <img src="{{ post.imagen_portada.url }}" alt="{{ post.titulo }}" style="transition: transform 0.3s;">
+                                <div style="overflow: hidden; border-bottom: 1px solid #f0f0f0;">
+                                    <img src="{{ post.imagen_portada.url }}" alt="{{ post.titulo }}" style="transition: transform 0.4s ease;">
                                 </div>
                             {% else %}
-                                <div style="width:100%; aspect-ratio:16/9; background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-image" style="color: #ccc; font-size: 3rem;"></i>
+                                <div style="width:100%; aspect-ratio:16/9; background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-image" style="color: #cbd5e0; font-size: 4rem;"></i>
                                 </div>
                             {% endif %}
-                            <div class="card-body" style="padding: 1.5rem;">
+                            
+                            <div style="padding: 2rem 1.75rem;">
                                 {% if post.categoria %}
-                                    <span style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #666; display: block; margin-bottom: 0.75rem;">
+                                    <span style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #0066cc; display: block; margin-bottom: 1rem;">
                                         {{ post.categoria.nombre }}
                                     </span>
                                 {% endif %}
-                                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; line-height: 1.4;">
+                                
+                                <h3 style="font-size: 1.35rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.4; color: #1a1a1a;">
                                     {{ post.titulo }}
                                 </h3>
-                                <div style="font-size: 0.85rem; color: #999; margin-bottom: 1rem;">
-                                    <i class="bi bi-calendar me-1"></i>{{ post.fecha_publicacion|date:"d/m/Y" }}
-                                    <span class="mx-2">•</span>
-                                    <i class="bi bi-person me-1"></i>{{ post.autor.username }}
+                                
+                                <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.8rem; color: #999; margin-bottom: 1.25rem;">
+                                    <span>
+                                        <i class="bi bi-calendar me-1"></i>{{ post.fecha_publicacion|date:"d/m/Y" }}
+                                    </span>
+                                    <span>•</span>
+                                    <span>
+                                        <i class="bi bi-person me-1"></i>{{ post.autor.username }}
+                                    </span>
                                 </div>
-                                <p style="color: #666; line-height: 1.7; margin-bottom: 1.5rem;">{{ post.get_resumen }}</p>
-                                <span style="color: #0066cc; font-weight: 500; font-size: 0.9rem;">
-                                    Leer más <i class="bi bi-arrow-right" style="font-size: 0.8rem;"></i>
+                                
+                                <p style="color: #555; line-height: 1.75; margin-bottom: 1.5rem; font-size: 0.95rem;">
+                                    {{ post.get_resumen|truncatechars:120 }}
+                                </p>
+                                
+                                <span style="display: inline-flex; align-items: center; color: #0066cc; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.3px;">
+                                    LEER MÁS <i class="bi bi-arrow-right" style="margin-left: 0.5rem; font-size: 0.75rem; transition: transform 0.2s;"></i>
                                 </span>
                             </div>
                         </a>
-                    </div>
-                </article>
+                    </article>
+                </div>
             {% empty %}
                 <div class="col-12">
-                    <div style="text-align: center; padding: 4rem 2rem; background: #f8f9fa; border-radius: 8px;">
-                        <i class="bi bi-newspaper" style="font-size: 4rem; color: #ddd; display: block; margin-bottom: 1.5rem;"></i>
-                        <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Próximamente</h3>
-                        <p class="text-secondary">Las noticias se cargarán pronto</p>
+                    <div style="text-align: center; padding: 5rem 2rem; background: linear-gradient(135deg, #f8f9fa 0%, #f0f1f3 100%); border-radius: 12px;">
+                        <i class="bi bi-newspaper" style="font-size: 5rem; color: #d1d5db; display: block; margin-bottom: 2rem;"></i>
+                        <h3 style="font-size: 1.75rem; margin-bottom: 1rem; color: #374151;">Próximamente</h3>
+                        <p class="text-secondary" style="font-size: 1.1rem;">Las noticias se cargarán pronto</p>
                     </div>
                 </div>
             {% endfor %}
@@ -74,18 +87,24 @@
 </section>
 
 <!-- Categories Section -->
-<section style="background: #f8f9fa; padding: 4rem 0; margin-top: 3rem;">
+<section style="background: #f8f9fa; padding: 5rem 0; margin-top: 3rem;">
     <div class="container">
-        <h2 style="font-size: 1.5rem; margin-bottom: 2rem; text-align: center;">Categorías</h2>
-        <div class="row g-3">
+        <h2 style="font-size: 2rem; margin-bottom: 3rem; text-align: center; font-weight: 700;">Categorías</h2>
+        <div class="row g-4">
             {% get_categories as categories %}
             {% for cat in categories|slice:":6" %}
                 <div class="col-6 col-md-4 col-lg-2">
                     <a href="{% url 'blog:por_categoria' cat.slug %}" class="text-decoration-none">
-                        <div style="padding: 1.5rem; background: white; border-radius: 8px; text-align: center; transition: all 0.2s; border: 1px solid #eee;">
-                            <i class="bi bi-folder" style="font-size: 2rem; color: #0066cc; display: block; margin-bottom: 0.75rem;"></i>
-                            <div style="font-weight: 500; margin-bottom: 0.25rem; color: #333;">{{ cat.nombre }}</div>
-                            <small style="color: #999;">{{ cat.posts.count }} notas</small>
+                        <div style="padding: 2rem 1.5rem; background: white; border-radius: 12px; text-align: center; transition: all 0.3s ease; border: 1px solid #f0f0f0; height: 100%;">
+                            <div style="width: 64px; height: 64px; margin: 0 auto 1.25rem; background: linear-gradient(135deg, #e6f0ff 0%, #f0f7ff 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
+                                <i class="bi bi-folder" style="font-size: 2rem; color: #0066cc;"></i>
+                            </div>
+                            <div style="font-weight: 600; margin-bottom: 0.5rem; color: #1a1a1a; font-size: 0.95rem; line-height: 1.4;">
+                                {{ cat.nombre }}
+                            </div>
+                            <small style="color: #999; font-size: 0.85rem;">
+                                {{ cat.posts.count }} {% if cat.posts.count == 1 %}nota{% else %}notas{% endif %}
+                            </small>
                         </div>
                     </a>
                 </div>
