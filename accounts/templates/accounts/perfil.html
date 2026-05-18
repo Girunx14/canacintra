@@ -2,88 +2,394 @@
 
 {% block title %}Mi Perfil - Canacintra{% endblock %}
 
-{% block content %}
-<div style="background: #f8f9fa; padding: 3rem 0 4rem; margin-bottom: 3rem;">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-auto">
-                <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=0066cc&color=fff&size=120" 
-                     alt="{{ user.username }}" 
-                     style="width: 100px; height: 100px; border-radius: 50%;">
-            </div>
-            <div class="col">
-                <h1 style="margin-bottom: 0.5rem;">{{ user.get_full_name|default:user.username }}</h1>
-                <p class="text-secondary">@{{ user.username }}</p>
-            </div>
-        </div>
-    </div>
-</div>
+{% block extra_css %}
+<style>
+    /* ═══════════════════════════════════
+       PERFIL — Editorial Dashboard
+       Sin degradados · Full dark/light
+       ═══════════════════════════════════ */
 
+    .profile-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: var(--space-2xl);
+        padding: var(--space-2xl) 0 var(--space-3xl);
+    }
+
+    /* --- Sidebar panel --- */
+    .profile-sidebar {
+        background: var(--cream-dark);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: var(--space-xl);
+        height: fit-content;
+        transition: background var(--transition);
+    }
+
+    .profile-avatar-container {
+        text-align: center;
+        margin-bottom: var(--space-xl);
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 2px solid var(--teal);
+        object-fit: cover;
+        display: block;
+        margin: 0 auto var(--space-md);
+        background: var(--white);
+    }
+
+    .profile-sidebar-name {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 2px;
+        line-height: 1.2;
+    }
+
+    .profile-sidebar-username {
+        color: var(--ink-muted);
+        font-size: 0.85rem;
+        margin-bottom: var(--space-lg);
+    }
+
+    /* Left panel tabs/nav */
+    .profile-nav {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-xl);
+    }
+
+    .profile-nav-btn {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        padding: 12px 16px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        color: var(--ink-light);
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-align: left;
+        cursor: pointer;
+        width: 100%;
+        transition: all var(--transition);
+    }
+
+    .profile-nav-btn:hover, .profile-nav-btn.active {
+        background: var(--ink);
+        color: var(--cream);
+        border-color: var(--ink);
+    }
+
+    .profile-nav-btn.logout-btn {
+        border-color: var(--danger);
+        color: var(--danger);
+        background: transparent;
+    }
+
+    .profile-nav-btn.logout-btn:hover {
+        background: var(--danger);
+        color: #FFFFFF;
+        border-color: var(--danger);
+    }
+
+    /* Stat box */
+    .profile-stat-box {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: var(--space-md);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: var(--space-lg);
+    }
+
+    .profile-stat-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--ink-muted);
+    }
+
+    .profile-stat-val {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--teal);
+    }
+
+    /* --- Main content panel --- */
+    .profile-content-panel {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: var(--space-2xl);
+        min-height: 480px;
+        transition: background var(--transition);
+    }
+
+    .panel-section-title {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: var(--space-xl);
+        border-bottom: 2px solid var(--ink);
+        padding-bottom: var(--space-sm);
+    }
+
+    /* Form Styles */
+    .profile-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-md);
+        margin-bottom: var(--space-lg);
+    }
+
+    .form-group-sec {
+        margin-bottom: var(--space-md);
+    }
+
+    .form-group-sec.full-width {
+        grid-column: span 2;
+    }
+
+    .form-group-sec label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-light);
+        margin-bottom: var(--space-xs);
+        display: block;
+    }
+
+    .form-group-sec .form-control {
+        padding: 12px 14px;
+        font-size: 0.95rem;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--white);
+        color: var(--ink);
+        min-height: 44px;
+        width: 100%;
+        transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .form-group-sec .form-control:focus {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 3px var(--teal-light);
+        outline: none;
+    }
+
+    .btn-profile-save {
+        padding: 12px 28px;
+        font-weight: 600;
+    }
+
+    /* Mis publicaciones list */
+    .user-posts-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .user-post-item {
+        padding: var(--space-md) 0;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-md);
+    }
+
+    .user-post-item:last-child {
+        border-bottom: none;
+    }
+
+    .user-post-title {
+        font-weight: 600;
+        color: var(--ink);
+        text-decoration: none;
+    }
+
+    .user-post-title:hover {
+        color: var(--teal);
+    }
+
+    .user-post-status {
+        padding: 4px 10px;
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .status-published {
+        background: var(--teal-light);
+        color: var(--teal);
+    }
+
+    .status-draft {
+        background: var(--cream-dark);
+        color: var(--ink-muted);
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 991px) {
+        .profile-layout {
+            grid-template-columns: 1fr;
+            gap: var(--space-xl);
+        }
+        .profile-content-panel {
+            padding: var(--space-xl);
+        }
+    }
+
+    @media (max-width: 575px) {
+        .profile-form-grid {
+            grid-template-columns: 1fr;
+        }
+        .form-group-sec.full-width {
+            grid-column: span 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
 <div class="container">
-    <div class="row g-4">
-        <div class="col-md-6">
-            <div style="border: 1px solid #eee; border-radius: 8px; padding: 2rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1.5rem;">Información</h3>
-                
-                <div class="mb-4">
-                    <small class="text-secondary d-block" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Email</small>
-                    <div style="font-size: 1rem;">{{ user.email|default:"No especificado" }}</div>
-                </div>
-                
-                <div class="mb-4">
-                    <small class="text-secondary d-block" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Usuario</small>
-                    <div style="font-size: 1rem;">{{ user.username }}</div>
-                </div>
-                
-                <div>
-                    <small class="text-secondary d-block" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Fecha de alta</small>
-                    <div style="font-size: 1rem;">{{ user.date_joined|date:"d/m/Y" }}</div>
-                </div>
+    <div class="profile-layout">
+        <!-- Sidebar Izquierdo -->
+        <aside class="profile-sidebar" role="complementary">
+            <div class="profile-avatar-container">
+                <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=1B7A6E&color=fff&size=120&bold=true"
+                     alt="Foto de perfil de {{ user.username }}"
+                     class="profile-avatar">
+                <h2 class="profile-sidebar-name">{{ user.get_full_name|default:user.username }}</h2>
+                <div class="profile-sidebar-username">@{{ user.username }}</div>
             </div>
-            
-            <div style="border: 1px solid #eee; border-radius: 8px; padding: 2rem; margin-top: 2rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1.5rem;">Estadísticas</h3>
-                <div class="row">
-                    <div class="col-6">
-                        <div style="font-size: 2.5rem; font-weight: 700; color: #0066cc;">{{ user.posts.count }}</div>
-                        <div class="text-secondary">Publicaciones</div>
-                    </div>
-                    <div class="col-6">
-                        <div style="font-size: 2.5rem; font-weight: 700; color: #0066cc;">{{ user.comentarios.count }}</div>
-                        <div class="text-secondary">Comentarios</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6">
-            <div style="border: 1px solid #eee; border-radius: 8px; padding: 2rem; margin-bottom: 2rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Acciones</h3>
-                <a href="{% url 'accounts:logout' %}" style="display: block; text-align: center; padding: 0.875rem; background: #1a1a1a; color: white; text-decoration: none; border-radius: 4px; font-weight: 500;">
-                    Cerrar Sesión
+
+            <!-- Navegación lateral del panel -->
+            <nav class="profile-nav" aria-label="Navegación del perfil">
+                <button class="profile-nav-btn active" id="btn-tab-info" onclick="switchTab('info')">
+                    <i class="bi bi-person" aria-hidden="true"></i> Perfil
+                </button>
+                <button class="profile-nav-btn" id="btn-tab-posts" onclick="switchTab('posts')">
+                    <i class="bi bi-journal-text" aria-hidden="true"></i> Mis Publicaciones
+                </button>
+                <a href="{% url 'blog:crear_post' %}" class="profile-nav-btn" style="border-color: var(--teal); color: var(--teal); background: var(--teal-light);">
+                    <i class="bi bi-plus-circle-fill" aria-hidden="true"></i> Redactar Noticia
                 </a>
+                <a href="{% url 'accounts:logout' %}" class="profile-nav-btn logout-btn">
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar Sesión
+                </a>
+            </nav>
+
+            <!-- Estadística de Visitas del Usuario (mockup) -->
+            <div class="profile-stat-box" aria-label="Estadísticas de impacto">
+                <span class="profile-stat-label">Impacto de Notas</span>
+                <span class="profile-stat-val" aria-label="{{ total_visitas }} visitas acumuladas">
+                    <i class="bi bi-eye-fill me-1" aria-hidden="true"></i> {{ total_visitas }}
+                </span>
             </div>
-            
-            <div style="border: 1px solid #eee; border-radius: 8px; padding: 2rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1.5rem;">Mis Publicaciones</h3>
+        </aside>
+
+        <!-- Contenedor Principal de Contenido -->
+        <main class="profile-content-panel">
+            <!-- Sección: Información del Perfil / Modificar -->
+            <section id="section-info">
+                <h1 class="panel-section-title">Información del Perfil</h1>
+                
+                <form method="post" action="{% url 'accounts:perfil' %}" novalidate>
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update_profile">
+                    
+                    <div class="profile-form-grid">
+                        <div class="form-group-sec">
+                            <label for="first_name">Nombre(s)</label>
+                            <input type="text" name="first_name" id="first_name" class="form-control" value="{{ user.first_name }}">
+                        </div>
+                        
+                        <div class="form-group-sec">
+                            <label for="last_name">Apellido(s)</label>
+                            <input type="text" name="last_name" id="last_name" class="form-control" value="{{ user.last_name }}">
+                        </div>
+                        
+                        <div class="form-group-sec full-width">
+                            <label for="email">Correo Electrónico</label>
+                            <input type="email" name="email" id="email" class="form-control" value="{{ user.email }}">
+                        </div>
+
+                        <div class="form-group-sec full-width">
+                            <label>Nombre de Usuario</label>
+                            <input type="text" class="form-control" value="{{ user.username }}" disabled style="opacity: 0.6; cursor: not-allowed;">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-profile-save">
+                            Modificar Perfil
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Sección: Mis Publicaciones -->
+            <section id="section-posts" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-4" style="border-bottom: 2px solid var(--ink); padding-bottom: var(--space-sm);">
+                    <h1 style="font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; color: var(--ink); margin: 0;">Mis Publicaciones</h1>
+                    <a href="{% url 'blog:crear_post' %}" class="btn btn-primary btn-sm" style="padding: 6px 16px; font-size: 0.85rem;">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i> Nueva Noticia
+                    </a>
+                </div>
+                
                 {% if user.posts.exists %}
-                    <ul class="list-unstyled mb-0">
-                        {% for post in user.posts.all %}
-                            <li style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;" class="{% if not forloop.last %}{% endif %}">
-                                <a href="{% url 'blog:detalle_post' post.slug %}" style="color: #0066cc; text-decoration: none; font-weight: 500;">
-                                    {{ post.titulo }}
-                                </a>
-                                <span style="display: inline-block; margin-left: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.8rem; background: {{ post.publicado|yesno:'#e6f4ea,#fef3c7' }}; color: {{ post.publicado|yesno:'#137333:#b7791f' }};">
-                                    {{ post.publicado|yesno:'Publicado:Borrador' }}
-                                </span>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                <ul class="user-posts-list">
+                    {% for post in user.posts.all %}
+                    <li class="user-post-item">
+                        <a href="{% url 'blog:detalle_post' post.slug %}" class="user-post-title">
+                            {{ post.titulo }}
+                        </a>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="user-post-status {% if post.publicado %}status-published{% else %}status-draft{% endif %}">
+                                {{ post.publicado|yesno:"Publicado,Borrador" }}
+                            </span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
                 {% else %}
-                    <p class="text-secondary mb-0" style="text-align: center; padding: 2rem 0;">Sin publicaciones</p>
+                <div class="text-center py-5">
+                    <i class="bi bi-journal-x" style="font-size: 2.5rem; color: var(--border); display: block; margin-bottom: var(--space-sm);"></i>
+                    <p style="color: var(--ink-muted); margin: 0;">No has escrito ninguna publicación todavía.</p>
+                </div>
                 {% endif %}
-            </div>
-        </div>
+            </section>
+        </main>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function switchTab(tabId) {
+        // Toggle active button class
+        document.getElementById('btn-tab-info').classList.toggle('active', tabId === 'info');
+        document.getElementById('btn-tab-posts').classList.toggle('active', tabId === 'posts');
+        
+        // Show/hide sections
+        document.getElementById('section-info').style.display = tabId === 'info' ? 'block' : 'none';
+        document.getElementById('section-posts').style.display = tabId === 'posts' ? 'block' : 'none';
+    }
+</script>
 {% endblock %}

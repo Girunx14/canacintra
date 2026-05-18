@@ -68,6 +68,7 @@ class Post(models.Model):
     )
     publicado = models.BooleanField(default=False)
     destacado = models.BooleanField(default=False)
+    visitas = models.PositiveIntegerField(default=0)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     fecha_publicacion = models.DateTimeField(null=True, blank=True)
@@ -97,6 +98,22 @@ class Post(models.Model):
     def get_comentarios_count(self):
         """Retorna la cantidad de comentarios aprobados."""
         return self.comentarios.filter(aprobado=True).count()
+
+
+class PostImagen(models.Model):
+    """Galería de imágenes para las publicaciones."""
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='imagenes')
+    imagen = models.ImageField(upload_to='posts/galeria/%Y/%m/')
+    alt_text = models.CharField(max_length=200, blank=True, help_text='Texto descriptivo para accesibilidad')
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Imagen de Galería'
+        verbose_name_plural = 'Imágenes de Galería'
+        ordering = ['fecha_creacion']
+
+    def __str__(self):
+        return f"Imagen para {self.post.titulo}"
 
 
 class Comentario(models.Model):

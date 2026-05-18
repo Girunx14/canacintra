@@ -2,112 +2,529 @@
 {% load blog_tags %}
 
 {% block title %}Inicio - Canacintra{% endblock %}
+{% block meta_description %}Canacintra - Las últimas noticias y reportajes del sector industrial de México.{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ═══════════════════════════════════
+       HOMEPAGE — Editorial Minimalism
+       ═══════════════════════════════════ */
+
+    /* --- Slider / Featured Carousel --- */
+    .featured-slider-sec {
+        background: var(--cream-dark);
+        border-bottom: 1px solid var(--border);
+        padding: var(--space-3xl) 0;
+        transition: background var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .carousel-item-inner {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: var(--space-2xl);
+        align-items: center;
+    }
+
+    .slider-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* --- Dynamic Staggered Animations --- */
+    .slider-dept {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--teal);
+        margin-bottom: var(--space-sm);
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(12px);
+        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slider-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.75rem, 4vw, 2.75rem);
+        font-weight: 800;
+        color: var(--ink);
+        line-height: 1.15;
+        margin-bottom: var(--space-md);
+        letter-spacing: -0.02em;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.08s, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.08s;
+    }
+
+    .slider-title a {
+        color: inherit;
+        text-decoration: none;
+        transition: color var(--transition);
+    }
+
+    .slider-title a:hover {
+        color: var(--teal);
+    }
+
+    .slider-meta {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        font-size: 0.8rem;
+        color: var(--ink-muted);
+        margin-bottom: var(--space-lg);
+        font-family: var(--font-body);
+        opacity: 0;
+        transform: translateY(15px);
+        transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.12s, transform 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.12s;
+    }
+
+    .slider-excerpt {
+        color: var(--ink-light);
+        font-size: 1rem;
+        line-height: 1.7;
+        margin-bottom: var(--space-xl);
+        opacity: 0;
+        transform: translateY(22px);
+        transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.16s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.16s;
+    }
+
+    .slider-action-wrap {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+    }
+
+    .slider-img-wrap {
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: var(--cream);
+        box-shadow: var(--shadow-md);
+        opacity: 0;
+        transform: scale(0.96) translateY(10px);
+        transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, box-shadow var(--transition);
+    }
+
+    .slider-img-wrap:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .slider-img-wrap img {
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slider-img-wrap:hover img {
+        transform: scale(1.03);
+    }
+
+    .slider-img-placeholder {
+        width: 100%;
+        aspect-ratio: 4/3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--cream);
+        color: var(--ink-muted);
+    }
+
+    .slider-img-placeholder i {
+        font-size: 4rem;
+    }
+
+    /* Active slide animations trigger */
+    .carousel-item.active .slider-dept,
+    .carousel-item.active .slider-title,
+    .carousel-item.active .slider-meta,
+    .carousel-item.active .slider-excerpt,
+    .carousel-item.active .slider-action-wrap {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .carousel-item.active .slider-img-wrap {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+    /* --- Modern Indicators (Expanding Pills) --- */
+    .carousel-indicators [data-bs-target] {
+        background-color: var(--ink);
+        width: 6px;
+        height: 6px;
+        border-radius: 100px;
+        border: none;
+        margin: 0 5px;
+        opacity: 0.25;
+        transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, background-color 0.3s ease;
+    }
+
+    .carousel-indicators .active {
+        width: 24px;
+        opacity: 1;
+        background-color: var(--teal);
+        border-radius: 100px;
+        transform: none;
+    }
+
+    /* --- Controls (Floating Glassmorphic Arrows) --- */
+    .carousel-controls-container {
+        display: flex;
+        justify-content: flex-start;
+        gap: var(--space-md);
+        margin-top: var(--space-xl);
+    }
+
+    .carousel-control-btn {
+        background: var(--white);
+        border: 1px solid var(--border);
+        color: var(--ink);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all var(--transition);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .carousel-control-btn:hover {
+        background: var(--ink);
+        color: var(--cream);
+        border-color: var(--ink);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .carousel-control-btn:active {
+        transform: translateY(0);
+        box-shadow: var(--shadow-sm);
+    }
+
+    /* --- News Section --- */
+    .news-section {
+        padding: var(--space-3xl) 0;
+        background: var(--cream);
+        transition: background var(--transition);
+    }
+
+    .section-header {
+        border-bottom: 2px solid var(--ink);
+        padding-bottom: var(--space-md);
+        margin-bottom: var(--space-2xl);
+        display: flex;
+        justify-content: justify;
+        align-items: flex-end;
+    }
+
+    .section-header h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    /* --- Custom Editorial News Card --- */
+    .editorial-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition: transform var(--transition), box-shadow var(--transition);
+    }
+
+    .editorial-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .card-img-container {
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .card-img-container img {
+        width: 100%;
+        aspect-ratio: 16/10;
+        object-fit: cover;
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        display: block;
+    }
+
+    .editorial-card:hover .card-img-container img {
+        transform: scale(1.04);
+    }
+
+    .card-img-placeholder-sec {
+        width: 100%;
+        aspect-ratio: 16/10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--cream-dark);
+        color: var(--ink-muted);
+    }
+
+    .card-img-placeholder-sec i {
+        font-size: 3rem;
+    }
+
+    .card-content-sec {
+        padding: var(--space-xl) var(--space-lg);
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .card-dept {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--teal);
+        margin-bottom: var(--space-xs);
+        display: inline-block;
+    }
+
+    .card-title-sec {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.3;
+        color: var(--ink);
+        margin-bottom: var(--space-sm);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .card-title-sec a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .card-title-sec a:hover {
+        color: var(--teal);
+    }
+
+    .card-meta-sec {
+        font-size: 0.75rem;
+        color: var(--ink-muted);
+        margin-bottom: var(--space-md);
+        display: flex;
+        gap: var(--space-sm);
+    }
+
+    .card-desc {
+        color: var(--ink-light);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: var(--space-lg);
+        flex-grow: 1;
+    }
+
+    .card-btn-more {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--teal);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: gap var(--transition);
+        margin-top: auto;
+    }
+
+    .editorial-card:hover .card-btn-more {
+        gap: 12px;
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 991px) {
+        .carousel-item-inner {
+            grid-template-columns: 1fr;
+            gap: var(--space-xl);
+        }
+        .slider-img-wrap {
+            order: -1;
+        }
+        .slider-img-wrap img {
+            aspect-ratio: 16/9;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .carousel-item-inner {
+            gap: var(--space-md);
+        }
+        .slider-title {
+            font-size: 1.5rem;
+        }
+        .slider-excerpt {
+            font-size: 0.9rem;
+            margin-bottom: var(--space-md);
+        }
+        .carousel-controls-container {
+            margin-top: var(--space-sm);
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section style="background: #f8f9fa; padding: 5rem 0; margin-bottom: 4rem;">
+<!-- Sección de Slider (Noticias Destacadas) -->
+<section class="featured-slider-sec" aria-label="Noticias destacadas">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 1rem; letter-spacing: -1px;">Últimas Noticias</h1>
-                <p class="text-secondary" style="font-size: 1.25rem; line-height: 1.6; max-width: 600px;">
-                    Mantente informado con las noticias más recientes del sector industrial
-                </p>
+        <div id="featuredCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <!-- Indicators -->
+            <div class="carousel-indicators" style="position: static; margin: var(--space-lg) 0 0; justify-content: flex-start;">
+                {% for post in destacados %}
+                <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active" aria-current="true"{% endif %} aria-label="Noticia {{ forloop.counter }}"></button>
+                {% endfor %}
             </div>
-            <div class="col-lg-5 text-lg-end mt-3 mt-lg-0">
-                <a href="{% url 'blog:lista_posts' %}" class="btn btn-outline-dark btn-lg" style="padding: 1rem 2.5rem; font-size: 1rem;">
-                    Ver todas →
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- News Grid -->
-<section style="margin-bottom: 5rem;">
-    <div class="container">
-        <div class="row g-5">
-            {% for post in posts %}
-                <div class="col-md-6 col-lg-4">
-                    <article class="news-card h-100">
-                        <a href="{% url 'blog:detalle_post' post.slug %}" class="text-decoration-none d-block">
-                            {% if post.imagen_portada %}
-                                <div style="overflow: hidden; border-bottom: 1px solid #f0f0f0;">
-                                    <img src="{{ post.imagen_portada.url }}" alt="{{ post.titulo }}" style="transition: transform 0.4s ease;">
-                                </div>
+            <!-- Slides -->
+            <div class="carousel-inner">
+                {% for post in destacados %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="6000">
+                    <div class="carousel-item-inner">
+                        <!-- Left Column: Content -->
+                        <div class="slider-content">
+                            {% if post.categoria %}
+                            <span class="slider-dept">Departamento: {{ post.categoria.nombre }}</span>
                             {% else %}
-                                <div style="width:100%; aspect-ratio:16/9; background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%); display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-image" style="color: #cbd5e0; font-size: 4rem;"></i>
-                                </div>
+                            <span class="slider-dept">Departamento: General</span>
                             {% endif %}
-                            
-                            <div style="padding: 2rem 1.75rem;">
-                                {% if post.categoria %}
-                                    <span style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #0066cc; display: block; margin-bottom: 1rem;">
-                                        {{ post.categoria.nombre }}
-                                    </span>
-                                {% endif %}
-                                
-                                <h3 style="font-size: 1.35rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.4; color: #1a1a1a;">
-                                    {{ post.titulo }}
-                                </h3>
-                                
-                                <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.8rem; color: #999; margin-bottom: 1.25rem;">
-                                    <span>
-                                        <i class="bi bi-calendar me-1"></i>{{ post.fecha_publicacion|date:"d/m/Y" }}
-                                    </span>
-                                    <span>•</span>
-                                    <span>
-                                        <i class="bi bi-person me-1"></i>{{ post.autor.username }}
-                                    </span>
-                                </div>
-                                
-                                <p style="color: #555; line-height: 1.75; margin-bottom: 1.5rem; font-size: 0.95rem;">
-                                    {{ post.get_resumen|truncatechars:120 }}
-                                </p>
-                                
-                                <span style="display: inline-flex; align-items: center; color: #0066cc; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.3px;">
-                                    LEER MÁS <i class="bi bi-arrow-right" style="margin-left: 0.5rem; font-size: 0.75rem; transition: transform 0.2s;"></i>
-                                </span>
+                            <h2 class="slider-title">
+                                <a href="{% url 'blog:detalle_post' post.slug %}">{{ post.titulo }}</a>
+                            </h2>
+                            <div class="slider-meta">
+                                <span><i class="bi bi-calendar3 me-1" aria-hidden="true"></i>{{ post.fecha_publicacion|date:"d M, Y" }}</span>
+                                <span>•</span>
+                                <span><i class="bi bi-person me-1" aria-hidden="true"></i>{{ post.autor.username }}</span>
                             </div>
-                        </a>
-                    </article>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <div style="text-align: center; padding: 5rem 2rem; background: linear-gradient(135deg, #f8f9fa 0%, #f0f1f3 100%); border-radius: 12px;">
-                        <i class="bi bi-newspaper" style="font-size: 5rem; color: #d1d5db; display: block; margin-bottom: 2rem;"></i>
-                        <h3 style="font-size: 1.75rem; margin-bottom: 1rem; color: #374151;">Próximamente</h3>
-                        <p class="text-secondary" style="font-size: 1.1rem;">Las noticias se cargarán pronto</p>
+                            <p class="slider-excerpt">
+                                {{ post.get_resumen|truncatechars:180 }}
+                            </p>
+                            <div class="slider-action-wrap">
+                                <a href="{% url 'blog:detalle_post' post.slug %}" class="btn btn-primary">
+                                    Saber más <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Image -->
+                        <div class="slider-img-wrap">
+                            {% if post.imagen_portada %}
+                            <img src="{{ post.imagen_portada.url }}" alt="{{ post.titulo }}">
+                            {% else %}
+                            <div class="slider-img-placeholder">
+                                <i class="bi bi-image" aria-hidden="true"></i>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-            {% endfor %}
+                {% empty %}
+                <div class="carousel-item active">
+                    <div class="carousel-item-inner">
+                        <div class="slider-content">
+                            <span class="slider-dept">Noticias</span>
+                            <h2 class="slider-title">Bienvenido a Canacintra</h2>
+                            <p class="slider-excerpt">Próximamente compartiremos las noticias y eventos más relevantes del sector industrial de México.</p>
+                        </div>
+                        <div class="slider-img-wrap">
+                            <div class="slider-img-placeholder">
+                                <i class="bi bi-newspaper" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Custom Navigation Buttons under Indicators -->
+            {% if destacados|length > 1 %}
+            <div class="carousel-controls-container">
+                <button class="carousel-control-btn" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev" aria-label="Anterior">
+                    <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                </button>
+                <button class="carousel-control-btn" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next" aria-label="Siguiente">
+                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </button>
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>
 
-<!-- Categories Section -->
-<section style="background: #f8f9fa; padding: 5rem 0; margin-top: 3rem;">
+<!-- Sección de Cuadrícula de Noticias -->
+<section class="news-section" aria-label="Listado de noticias">
     <div class="container">
-        <h2 style="font-size: 2rem; margin-bottom: 3rem; text-align: center; font-weight: 700;">Categorías</h2>
+        <div class="section-header">
+            <h2>Últimas Publicaciones</h2>
+        </div>
+
         <div class="row g-4">
-            {% get_categories as categories %}
-            {% for cat in categories|slice:":6" %}
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="{% url 'blog:por_categoria' cat.slug %}" class="text-decoration-none">
-                        <div style="padding: 2rem 1.5rem; background: white; border-radius: 12px; text-align: center; transition: all 0.3s ease; border: 1px solid #f0f0f0; height: 100%;">
-                            <div style="width: 64px; height: 64px; margin: 0 auto 1.25rem; background: linear-gradient(135deg, #e6f0ff 0%, #f0f7ff 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
-                                <i class="bi bi-folder" style="font-size: 2rem; color: #0066cc;"></i>
-                            </div>
-                            <div style="font-weight: 600; margin-bottom: 0.5rem; color: #1a1a1a; font-size: 0.95rem; line-height: 1.4;">
-                                {{ cat.nombre }}
-                            </div>
-                            <small style="color: #999; font-size: 0.85rem;">
-                                {{ cat.posts.count }} {% if cat.posts.count == 1 %}nota{% else %}notas{% endif %}
-                            </small>
+            {% for post in posts %}
+            <div class="col-md-6 col-lg-4">
+                <article class="editorial-card">
+                    <div class="card-img-container">
+                        {% if post.imagen_portada %}
+                        <img src="{{ post.imagen_portada.url }}" alt="{{ post.titulo }}" loading="lazy">
+                        {% else %}
+                        <div class="card-img-placeholder-sec">
+                            <i class="bi bi-image" aria-hidden="true"></i>
                         </div>
-                    </a>
+                        {% endif %}
+                    </div>
+                    <div class="card-content-sec">
+                        {% if post.categoria %}
+                        <span class="card-dept">Departamento: {{ post.categoria.nombre }}</span>
+                        {% else %}
+                        <span class="card-dept">Departamento: General</span>
+                        {% endif %}
+                        <h3 class="card-title-sec">
+                            <a href="{% url 'blog:detalle_post' post.slug %}">{{ post.titulo }}</a>
+                        </h3>
+                        <div class="card-meta-sec">
+                            <span><i class="bi bi-calendar3 me-1" aria-hidden="true"></i>{{ post.fecha_publicacion|date:"d/m/Y" }}</span>
+                        </div>
+                        <p class="card-desc">
+                            {{ post.get_resumen|truncatechars:120 }}
+                        </p>
+                        <div>
+                            <a href="{% url 'blog:detalle_post' post.slug %}" class="card-btn-more">
+                                Saber más <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            {% empty %}
+            {% if not destacados %}
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="bi bi-journal-text" aria-hidden="true"></i>
+                    <h3>No hay publicaciones aún</h3>
+                    <p>Las últimas noticias del sector industrial se mostrarán aquí.</p>
                 </div>
+            </div>
+            {% endif %}
             {% endfor %}
         </div>
     </div>

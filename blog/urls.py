@@ -11,4 +11,5 @@ urlpatterns = [
     path('tag/<slug:slug>/', views.por_tag, name='por_tag'),
     path('buscar/', views.buscar, name='buscar'),
     path('suscribir/', views.suscribir, name='suscribir'),
+    path('crear-noticia/', views.crear_post, name='crear_post'),
 ]

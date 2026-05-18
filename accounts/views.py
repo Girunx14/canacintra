@@ -55,5 +55,25 @@ def logout_usuario(request):
 
 @login_required
 def perfil(request):
-    """Vista para ver el perfil del usuario autenticado."""
-    return render(request, 'accounts/perfil.html', {'user': request.user})
+    """Vista para ver y modificar el perfil del usuario autenticado."""
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'update_profile':
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            email = request.POST.get('email')
+            
+            request.user.first_name = first_name
+            request.user.last_name = last_name
+            request.user.email = email
+            request.user.save()
+            messages.success(request, '¡Perfil actualizado exitosamente!')
+            return redirect('accounts:perfil')
+            
+    # Calcular las visitas totales acumuladas de sus publicaciones
+    total_visitas = sum(post.visitas for post in request.user.posts.all())
+    
+    return render(request, 'accounts/perfil.html', {
+        'user': request.user,
+        'total_visitas': total_visitas
+    })

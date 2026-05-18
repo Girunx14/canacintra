@@ -7,13 +7,22 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 import re
 from .models import Post, Categoria, Tag, Comentario, Suscriptor
-from .forms import ComentarioForm
+from .forms import ComentarioForm, PostForm
 
 
 def inicio(request):
     """Vista de página de inicio con las últimas publicaciones."""
-    posts = Post.objects.filter(publicado=True)[:6]
-    return render(request, 'blog/inicio.html', {'posts': posts})
+    posts_destacados = Post.objects.filter(publicado=True, destacado=True).select_related('autor', 'categoria')[:3]
+    if not posts_destacados.exists():
+        posts_destacados = Post.objects.filter(publicado=True).select_related('autor', 'categoria')[:3]
+    
+    destacados_ids = [p.id for p in posts_destacados]
+    posts = Post.objects.filter(publicado=True).exclude(id__in=destacados_ids).select_related('autor', 'categoria')[:6]
+    
+    return render(request, 'blog/inicio.html', {
+        'destacados': posts_destacados,
+        'posts': posts
+    })
 
 
 def lista_posts(request):
@@ -30,6 +39,11 @@ def lista_posts(request):
 def detalle_post(request, slug):
     """Muestra el detalle de una publicación."""
     post = get_object_or_404(Post.objects.select_related('autor', 'categoria'), slug=slug, publicado=True)
+    
+    # Incrementar visitas de la noticia
+    post.visitas += 1
+    post.save(update_fields=['visitas'])
+    
     tags = post.tags.all()
     comentarios = post.comentarios.filter(aprobado=True).select_related('autor')
     
@@ -154,5 +168,26 @@ def suscribir(request):
             'status': 'error',
             'message': 'Hubo un error al procesar tu solicitud. Por favor, intenta de nuevo.'
         }, status=500)
+
+
+@login_required
+def crear_post(request):
+    """Vista para crear una publicación desde el frontend."""
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.autor = request.user
+            if post.publicado:
+                from django.utils import timezone
+                post.fecha_publicacion = timezone.now()
+            post.save()
+            form.save_m2m()
+            messages.success(request, '¡La publicación ha sido creada exitosamente!')
+            return redirect('blog:detalle_post', slug=post.slug)
+    else:
+        form = PostForm()
+    
+    return render(request, 'blog/crear_post.html', {'form': form})
 
 

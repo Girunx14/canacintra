@@ -4,114 +4,97 @@
 {% block title %}Noticias - Canacintra{% endblock %}
 
 {% block content %}
-<!-- Header -->
-<section style="background: #f8f9fa; padding: 4rem 0; margin-bottom: 4rem;">
+<!-- Page Header -->
+<div class="page-header">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <nav aria-label="breadcrumb" class="mb-3">
-                    <ol class="breadcrumb" style="background: transparent; padding: 0;">
-                        <li class="breadcrumb-item"><a href="/" style="color: #666;">Inicio</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Noticias</li>
-                    </ol>
-                </nav>
-                <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 1rem; letter-spacing: -1px;">Todas las Noticias</h1>
-                <p class="text-secondary" style="font-size: 1.25rem;">Explora nuestro archivo de publicaciones</p>
-            </div>
-        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Noticias</li>
+            </ol>
+        </nav>
+        <h1>Todas las Noticias</h1>
+        <p class="lead">Explora nuestro archivo completo de publicaciones</p>
     </div>
-</section>
+</div>
 
 <!-- News Grid -->
-<section style="margin-bottom: 5rem;">
+<section style="padding: var(--space-2xl) 0 var(--space-3xl);">
     <div class="container">
-        <div class="row g-5">
+        <div class="row g-4">
             {% for post in posts %}
-                <div class="col-md-6 col-lg-4">
-                    <article class="news-card h-100">
-                        <a href="{% url 'blog:detalle_post' post.slug %}" class="text-decoration-none d-block">
+            <div class="col-md-6 col-lg-4">
+                <article class="news-card">
+                    <a href="{% url 'blog:detalle_post' post.slug %}" class="text-decoration-none d-block">
+                        <div class="card-img-wrap">
                             {% if post.imagen_portada %}
-                                <div style="overflow: hidden; border-bottom: 1px solid #f0f0f0;">
-                                    <img src="{{ post.imagen_portada.url }}" alt="{{ post.titulo }}">
-                                </div>
+                                <img src="{{ post.imagen_portada.url }}" alt="{{ post.titulo }}" loading="lazy" width="400" height="225">
                             {% else %}
-                                <div style="width:100%; aspect-ratio:16/9; background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%); display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-image" style="color: #cbd5e0; font-size: 4rem;"></i>
+                                <div class="card-img-placeholder">
+                                    <i class="bi bi-image" aria-hidden="true"></i>
                                 </div>
                             {% endif %}
-                            
-                            <div style="padding: 2rem 1.75rem;">
-                                {% if post.categoria %}
-                                    <span style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #0066cc; display: block; margin-bottom: 1rem;">
-                                        {{ post.categoria.nombre }}
-                                    </span>
-                                {% endif %}
-                                
-                                <h3 style="font-size: 1.35rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.4; color: #1a1a1a;">
-                                    {{ post.titulo }}
-                                </h3>
-                                
-                                <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.8rem; color: #999; margin-bottom: 1.25rem;">
-                                    <span><i class="bi bi-calendar me-1"></i>{{ post.fecha_publicacion|date:"d/m/Y" }}</span>
-                                    <span>•</span>
-                                    <span><i class="bi bi-person me-1"></i>{{ post.autor.username }}</span>
-                                </div>
-                                
-                                <p style="color: #555; line-height: 1.75; margin-bottom: 1.5rem; font-size: 0.95rem;">
-                                    {{ post.get_resumen|truncatechars:120 }}
-                                </p>
-                                
-                                <span style="display: inline-flex; align-items: center; color: #0066cc; font-weight: 600; font-size: 0.85rem;">
-                                    LEER MÁS <i class="bi bi-arrow-right" style="margin-left: 0.5rem; font-size: 0.75rem;"></i>
-                                </span>
+                        </div>
+                        <div class="card-body">
+                            {% if post.categoria %}
+                                <span class="card-category">{{ post.categoria.nombre }}</span>
+                            {% endif %}
+                            <h3 class="card-title">{{ post.titulo }}</h3>
+                            <div class="card-meta">
+                                <span><i class="bi bi-calendar3 me-1"></i>{{ post.fecha_publicacion|date:"d/m/Y" }}</span>
+                                <span style="color: var(--border);">|</span>
+                                <span><i class="bi bi-person me-1"></i>{{ post.autor.username }}</span>
                             </div>
-                        </a>
-                    </article>
-                </div>
+                            <p class="card-excerpt">{{ post.get_resumen|truncatechars:120 }}</p>
+                            <span class="card-read-more">Leer más <i class="bi bi-arrow-right"></i></span>
+                        </div>
+                    </a>
+                </article>
+            </div>
             {% empty %}
-                <div class="col-12">
-                    <div style="text-align: center; padding: 5rem 2rem; background: #f8f9fa; border-radius: 12px;">
-                        <i class="bi bi-newspaper" style="font-size: 5rem; color: #d1d5db; display: block; margin-bottom: 2rem;"></i>
-                        <h3 style="font-size: 1.75rem; margin-bottom: 1rem;">Sin resultados</h3>
-                        <p class="text-secondary">No hay publicaciones disponibles</p>
-                    </div>
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="bi bi-newspaper" aria-hidden="true"></i>
+                    <h3>Sin resultados</h3>
+                    <p>No hay publicaciones disponibles en este momento.</p>
                 </div>
+            </div>
             {% endfor %}
         </div>
-        
-        <!-- Paginación -->
-        {% if posts.has_other %}
-            <nav aria-label="Navegación" class="mt-5">
-                <ul class="pagination justify-content-center">
-                    {% if posts.has_previous %}
-                        <li class="page-item me-2">
-                            <a class="page-link" href="?page={{ posts.previous_page_number }}" style="border: none; color: #1a1a1a; font-weight: 500;">
-                                <i class="bi bi-chevron-left"></i> Anterior
-                            </a>
-                        </li>
+
+        <!-- Pagination -->
+        {% if posts.has_other_pages %}
+        <nav aria-label="Navegación de páginas" style="margin-top: var(--space-2xl);">
+            <ul class="pagination justify-content-center">
+                {% if posts.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.previous_page_number }}">
+                        <i class="bi bi-chevron-left"></i> Anterior
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for num in posts.paginator.page_range %}
+                    {% if posts.number == num %}
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
                     {% endif %}
-                    
-                    {% for num in posts.paginator.page_range %}
-                        {% if posts.number == num %}
-                            <li class="page-item active me-2" aria-current="page">
-                                <span class="page-link" style="background: #1a1a1a; border: none; color: white;">{{ num }}</span>
-                            </li>
-                        {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
-                            <li class="page-item me-2">
-                                <a class="page-link" href="?page={{ num }}" style="border: none; color: #1a1a1a;">{{ num }}</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% if posts.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ posts.next_page_number }}" style="border: none; color: #1a1a1a; font-weight: 500;">
-                                Siguiente <i class="bi bi-chevron-right"></i>
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
+                {% endfor %}
+
+                {% if posts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.next_page_number }}">
+                        Siguiente <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
         {% endif %}
     </div>
 </section>

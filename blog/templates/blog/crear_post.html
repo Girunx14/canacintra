@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Nueva Noticia - Canacintra{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ═══════════════════════════════════
+       CREAR NOTICIA — Editorial Form
+       Sin degradados · Full dark/light
+       ═══════════════════════════════════ */
+
+    .form-wrapper-sec {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: var(--space-2xl);
+        max-width: 800px;
+        margin: var(--space-2xl) auto var(--space-3xl);
+        transition: background var(--transition);
+    }
+
+    .form-header-sec {
+        border-bottom: 2px solid var(--ink);
+        padding-bottom: var(--space-md);
+        margin-bottom: var(--space-2xl);
+    }
+
+    .form-header-sec h1 {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--ink);
+        margin: 0;
+    }
+
+    .form-grid-sec {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-md);
+    }
+
+    .field-wrap {
+        margin-bottom: var(--space-md);
+    }
+
+    .field-wrap.full-width {
+        grid-column: span 2;
+    }
+
+    .field-wrap label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-light);
+        margin-bottom: var(--space-xs);
+        display: block;
+    }
+
+    .field-wrap .form-control, 
+    .field-wrap .form-select {
+        padding: 12px 14px;
+        font-size: 0.95rem;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--white);
+        color: var(--ink);
+        width: 100%;
+        min-height: 44px;
+        transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .field-wrap .form-control:focus,
+    .field-wrap .form-select:focus {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 3px var(--teal-light);
+        outline: none;
+    }
+
+    /* Checkbox list wrapper */
+    .checks-panel {
+        background: var(--cream-dark);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: var(--space-md) var(--space-lg);
+        display: flex;
+        gap: var(--space-2xl);
+        grid-column: span 2;
+        margin-bottom: var(--space-md);
+    }
+
+    .form-check-sec {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .form-check-sec .form-check-input {
+        width: 18px;
+        height: 18px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        background-color: var(--white);
+        cursor: pointer;
+        transition: background-color var(--transition), border-color var(--transition);
+    }
+
+    .form-check-sec .form-check-input:checked {
+        background-color: var(--teal);
+        border-color: var(--teal);
+    }
+
+    .form-check-sec label {
+        margin-bottom: 0;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: none;
+        letter-spacing: normal;
+        cursor: pointer;
+        color: var(--ink);
+    }
+
+    .action-row {
+        border-top: 1px solid var(--border);
+        padding-top: var(--space-lg);
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-md);
+        grid-column: span 2;
+    }
+
+    .btn-submit-post {
+        padding: 12px 32px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .form-grid-sec {
+            grid-template-columns: 1fr;
+        }
+        .field-wrap.full-width {
+            grid-column: span 1;
+        }
+        .checks-panel {
+            grid-column: span 1;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+        .action-row {
+            grid-column: span 1;
+            flex-direction: column-reverse;
+        }
+        .action-row .btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-wrapper-sec animate-in">
+        <div class="form-header-sec">
+            <h1>Redactar Nueva Noticia</h1>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            
+            <div class="form-grid-sec">
+                <!-- Título -->
+                <div class="field-wrap full-width">
+                    <label for="{{ form.titulo.id_for_label }}">Título de la Noticia</label>
+                    {{ form.titulo }}
+                    {% for error in form.titulo.errors %}
+                    <div class="text-danger small mt-1" role="alert">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Categoría -->
+                <div class="field-wrap full-width">
+                    <label for="{{ form.categoria.id_for_label }}">Departamento / Categoría</label>
+                    {{ form.categoria }}
+                    {% for error in form.categoria.errors %}
+                    <div class="text-danger small mt-1" role="alert">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Resumen -->
+                <div class="field-wrap full-width">
+                    <label for="{{ form.resumen.id_for_label }}">Resumen Corto</label>
+                    {{ form.resumen }}
+                    <small class="form-text text-muted">Aparece en el carrusel de inicio y tarjetas del listado.</small>
+                    {% for error in form.resumen.errors %}
+                    <div class="text-danger small mt-1" role="alert">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Contenido -->
+                <div class="field-wrap full-width">
+                    <label for="{{ form.contenido.id_for_label }}">Cuerpo de la Noticia</label>
+                    {{ form.contenido }}
+                    {% for error in form.contenido.errors %}
+                    <div class="text-danger small mt-1" role="alert">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Imagen Portada -->
+                <div class="field-wrap full-width">
+                    <label for="{{ form.imagen_portada.id_for_label }}">Imagen de Portada</label>
+                    {{ form.imagen_portada }}
+                    {% for error in form.imagen_portada.errors %}
+                    <div class="text-danger small mt-1" role="alert">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Panel de Casillas de Verificación (Estado) -->
+                <div class="checks-panel">
+                    <div class="form-check-sec">
+                        {{ form.publicado }}
+                        <label for="{{ form.publicado.id_for_label }}">Publicar inmediatamente</label>
+                    </div>
+                    <div class="form-check-sec">
+                        {{ form.destacado }}
+                        <label for="{{ form.destacado.id_for_label }}">Destacar en el carrusel de inicio</label>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="action-row">
+                    <a href="{% url 'accounts:perfil' %}" class="btn btn-outline">Cancelar</a>
+                    <button type="submit" class="btn btn-primary btn-submit-post">Publicar Noticia</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

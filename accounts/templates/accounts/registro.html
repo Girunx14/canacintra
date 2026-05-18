@@ -1,39 +1,386 @@
 {% extends 'base.html' %}
 
 {% block title %}Registro - Canacintra{% endblock %}
+{% block meta_description %}Crea una cuenta en Canacintra para acceder a noticias, estadísticas y recursos exclusivos del sector industrial.{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ═══════════════════════════════════
+       REGISTRO — Split-screen Editorial
+       Sin degradados · Dark/Light aware
+       ═══════════════════════════════════ */
+
+    /* --- Layout --- */
+    .register-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: calc(100vh - 72px);
+    }
+
+    /* --- Panel izquierdo (marca) --- */
+    .register-brand-panel {
+        position: relative;
+        background: var(--ink);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: var(--space-3xl) var(--space-2xl);
+        overflow: hidden;
+    }
+
+    /* Círculo decorativo sutil (sin gradiente, solo borde) */
+    .register-brand-panel::after {
+        content: "";
+        position: absolute;
+        bottom: -10%;
+        left: -15%;
+        width: 380px;
+        height: 380px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .brand-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 360px;
+    }
+
+    .brand-logo {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4vw, 2.75rem);
+        font-weight: 800;
+        color: var(--cream);
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin-bottom: var(--space-lg);
+    }
+
+    .brand-divider {
+        width: 48px;
+        height: 2px;
+        background: var(--gold);
+        margin: 0 auto var(--space-lg);
+    }
+
+    .brand-tagline {
+        font-family: var(--font-body);
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.5);
+        line-height: 1.7;
+        font-weight: 300;
+    }
+
+    .brand-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-sm);
+        margin-top: var(--space-2xl);
+        padding: var(--space-sm) var(--space-md);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 100px;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .brand-badge .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--gold);
+        animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+    }
+
+    /* --- Panel derecho (formulario) --- */
+    .register-form-panel {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: var(--space-2xl);
+        background: var(--white);
+        transition: background var(--transition);
+    }
+
+    .register-form-container {
+        width: 100%;
+        max-width: 380px;
+    }
+
+    .register-greeting {
+        font-family: var(--font-display);
+        font-size: clamp(1.75rem, 3vw, 2.25rem);
+        font-weight: 700;
+        color: var(--ink);
+        letter-spacing: -0.02em;
+        margin-bottom: var(--space-sm);
+    }
+
+    .register-subtitle {
+        color: var(--ink-muted);
+        font-size: 0.95rem;
+        margin-bottom: var(--space-xl);
+        line-height: 1.6;
+    }
+
+    /* --- Campos del form --- */
+    .register-field {
+        margin-bottom: var(--space-md);
+    }
+
+    .register-field .form-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-light);
+        margin-bottom: var(--space-xs);
+        display: block;
+    }
+
+    .register-field .form-control {
+        padding: 10px 14px;
+        font-size: 0.95rem;
+        font-family: var(--font-body);
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--white);
+        color: var(--ink);
+        transition: border-color var(--transition), box-shadow var(--transition);
+        min-height: 44px;
+        width: 100%;
+    }
+
+    .register-field .form-control:focus {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 3px var(--teal-light);
+        outline: none;
+    }
+
+    .register-field .form-text {
+        font-size: 0.78rem;
+        color: var(--ink-muted);
+        margin-top: 4px;
+        line-height: 1.4;
+    }
+
+    .register-field .field-error {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--danger);
+        font-size: 0.82rem;
+        margin-top: var(--space-sm);
+        font-weight: 500;
+    }
+
+    /* --- Botón submit --- */
+    .register-submit {
+        width: 100%;
+        padding: 14px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        font-family: var(--font-body);
+        letter-spacing: 0.02em;
+        color: var(--cream);
+        background: var(--ink);
+        border: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
+        min-height: 48px;
+        margin-top: var(--space-md);
+    }
+
+    .register-submit:hover {
+        opacity: 0.85;
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .register-submit:active {
+        transform: translateY(0);
+        box-shadow: none;
+        opacity: 1;
+    }
+
+    /* --- Errores globales --- */
+    .register-errors {
+        border: 1px solid var(--danger);
+        border-radius: var(--radius-md);
+        padding: var(--space-md);
+        margin-bottom: var(--space-lg);
+        background: var(--white);
+    }
+
+    .register-errors p {
+        color: var(--danger);
+        font-size: 0.85rem;
+        margin: 0;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* --- Footer / enlace ingreso --- */
+    .register-footer {
+        text-align: center;
+        margin-top: var(--space-xl);
+        padding-top: var(--space-xl);
+        border-top: 1px solid var(--border);
+    }
+
+    .register-footer p {
+        color: var(--ink-muted);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .register-footer a {
+        color: var(--teal);
+        font-weight: 600;
+    }
+
+    .register-footer a:hover {
+        color: var(--ink);
+    }
+
+    /* --- Animaciones de entrada --- */
+    .fade-up {
+        opacity: 0;
+        transform: translateY(16px);
+        animation: fadeUp 0.5s cubic-bezier(.4, 0, .2, 1) forwards;
+    }
+    .fade-up-d1 { animation-delay: 0.1s; }
+    .fade-up-d2 { animation-delay: 0.2s; }
+
+    @keyframes fadeUp {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 991px) {
+        .register-wrapper {
+            grid-template-columns: 1fr;
+            min-height: auto;
+        }
+        .register-brand-panel {
+            padding: var(--space-2xl) var(--space-lg);
+            min-height: 200px;
+        }
+        .brand-tagline { display: none; }
+        .brand-badge { display: none; }
+        .register-form-panel {
+            padding: var(--space-2xl) var(--space-lg);
+        }
+    }
+
+    @media (max-width: 575px) {
+        .register-brand-panel {
+            padding: var(--space-xl) var(--space-md);
+            min-height: 150px;
+        }
+        .brand-logo { font-size: 1.5rem; }
+        .register-form-panel {
+            padding: var(--space-xl) var(--space-md);
+        }
+        .register-greeting { font-size: 1.5rem; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-up { animation: none; opacity: 1; transform: none; }
+        .brand-badge .dot { animation: none; }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div style="background: #f8f9fa; padding: 3rem 2rem; border-radius: 8px;">
-                <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Crear Cuenta</h2>
-                <p class="text-secondary mb-4">Completa el formulario</p>
-                
-                <form method="post">
-                    {% csrf_token %}
-                    {% for field in form %}
-                        <div class="mb-3">
-                            <label class="form-label" style="font-weight: 500;">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.help_text %}
-                                <small class="form-text text-muted d-block mt-1">{{ field.help_text }}</small>
-                            {% endif %}
-                            {% for error in field.errors %}
-                                <div class="text-danger small mt-1">{{ error }}</div>
-                            {% endfor %}
-                        </div>
+<div class="register-wrapper">
+    <!-- Panel de marca -->
+    <div class="register-brand-panel" aria-hidden="true">
+        <div class="brand-content">
+            <div class="brand-logo">CANACINTRA</div>
+            <div class="brand-divider"></div>
+            <p class="brand-tagline">
+                Únete a la red industrial más influyente del país.
+                Crea tu cuenta hoy mismo.
+            </p>
+            <div class="brand-badge">
+                <span class="dot"></span>
+                Registro abierto
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel del formulario -->
+    <div class="register-form-panel">
+        <div class="register-form-container">
+            <h1 class="register-greeting fade-up">Crear Cuenta</h1>
+            <p class="register-subtitle fade-up fade-up-d1">
+                Completa el formulario para unirte a nosotros
+            </p>
+
+            {% if form.non_field_errors %}
+            <div class="register-errors fade-up fade-up-d1" role="alert">
+                {% for error in form.non_field_errors %}
+                <p><i class="bi bi-exclamation-circle" aria-hidden="true"></i> {{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post" class="fade-up fade-up-d2" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="register-field">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                    <div class="form-text">{{ field.help_text }}</div>
+                    {% endif %}
+                    {% for error in field.errors %}
+                    <div class="field-error" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+                        {{ error }}
+                    </div>
                     {% endfor %}
-                    <button type="submit" style="width: 100%; background: #1a1a1a; color: white; border: none; padding: 0.875rem; border-radius: 4px; font-weight: 500; margin-bottom: 1.5rem;">
-                        Registrarse
-                    </button>
-                </form>
-                
-                <p class="text-center" style="color: #666;">
-                    ¿Ya tienes cuenta? <a href="{% url 'accounts:login' %}" style="color: #0066cc;">Inicia sesión</a>
-                </p>
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="register-submit" id="register-submit-btn">
+                    Registrar Usuario
+                </button>
+            </form>
+
+            <div class="register-footer fade-up fade-up-d2">
+                <p>¿Ya tienes cuenta? <a href="{% url 'accounts:login' %}">Iniciar Sesión</a></p>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Añadir clase form-control a los inputs de Django
+    document.querySelectorAll('.register-field input').forEach(function(input) {
+        input.classList.add('form-control');
+        var label = input.closest('.register-field').querySelector('.form-label');
+        if (label && !input.placeholder) {
+            input.placeholder = label.textContent.trim();
+        }
+    });
+</script>
 {% endblock %}

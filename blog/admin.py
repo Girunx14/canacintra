@@ -1,5 +1,10 @@
 from django.contrib import admin
-from .models import Categoria, Tag, Post, Comentario, Suscriptor
+from .models import Categoria, Tag, Post, Comentario, Suscriptor, PostImagen
+
+
+class PostImagenInline(admin.TabularInline):
+    model = PostImagen
+    extra = 3
 
 
 @admin.register(Categoria)
@@ -18,6 +23,7 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
+    inlines = [PostImagenInline]
     list_display = [
         'titulo', 'autor', 'categoria', 'publicado', 
         'destacado', 'fecha_publicacion', 'get_comentarios_count'
